@@ -1,24 +1,24 @@
 class Partita{
-    #mani;
-    #puntiCPU;
-    #puntiGiocatore;
-    #lastPlay;
+      #mani=0;
+      #puntiCPU=0;
+      #puntiGiocatore=0;
+      #lastPlay=true;
     constructor(mani) {
         this.#mani=mani;
         this.#puntiCPU=0;
         this.#puntiGiocatore=0;
         this.#lastPlay=false;//false cpu, true giocatore(l'ultimo che ha vinto)
     }
-    getPuntiCPU(){
+      getPuntiCPU(){
         return this.#puntiCPU;
     }
-    getPuntiGiocatore(){
+      getPuntiGiocatore(){
         return this.#puntiGiocatore;
     }
-    getManiRimanenti(){
+      getManiRimanenti(){
         return this.#mani;
     }
-    getManiGiocate(){
+      getManiGiocate(){
         return this.#puntiGiocatore+this.#puntiCPU;
     }
 
@@ -27,7 +27,7 @@ class Partita{
      * @param giocata scelta del giocatore
      * @returns {boolean} se ha pareggiato
      */
-    gioca(giocata){
+      gioca(giocata){
         if(this.#mani>0){
             let cpu=(Math.random()*3)|0;
             if(cpu===giocata){
@@ -44,11 +44,16 @@ class Partita{
             }
         }
     }
-    isEndend(){
+      isEndend(){
         return this.#mani<=0;
     }
-    lastWinnerIsCPU(){
+      lastWinnerIsCPU(){
         return this.#lastPlay;
+    }
+      reset(){
+        this.#mani=0;
+        this.#puntiGiocatore=0;
+        this.#puntiCPU=0;
     }
 
 }
