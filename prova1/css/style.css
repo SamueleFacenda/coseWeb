@@ -1,0 +1,33 @@
+.centeredBig{
+    margin: auto;
+    width: 50%;
+    height: 30%;
+}
+.max-height{
+    height: max-content;
+}
+.head{
+    height: 5em;
+    text-align: center;
+    line-height: 5em;
+    font-size: large;
+    font-weight: bold;
+}
+.foot{
+    text-align: center;
+    padding-top: 1em;
+    height: 8em;
+}
+.intestation{
+    background-color: #03f8fc;
+    border-radius: 20px;
+}
+.widht-center{
+    width: 70%;
+    margin-left: 15%;
+    margin-right: 15%;
+}
+.myFrame{
+    border: white;
+    height:40em;
+}
