@@ -1,0 +1,54 @@
+class Partita{
+    #mani;
+    #puntiCPU;
+    #puntiGiocatore;
+    #lastPlay;
+    constructor(mani) {
+        this.#mani=mani;
+        this.#puntiCPU=0;
+        this.#puntiGiocatore=0;
+        this.#lastPlay=false;//false cpu, true giocatore(l'ultimo che ha vinto)
+    }
+    getPuntiCPU(){
+        return this.#puntiCPU;
+    }
+    getPuntiGiocatore(){
+        return this.#puntiGiocatore;
+    }
+    getManiRimanenti(){
+        return this.#mani;
+    }
+    getManiGiocate(){
+        return this.#puntiGiocatore+this.#puntiCPU;
+    }
+
+    /**
+     * 0 carta, 1 forbice, 2 sasso
+     * @param giocata scelta del giocatore
+     * @returns {boolean} se ha pareggiato
+     */
+    gioca(giocata){
+        if(this.#mani>0){
+            let cpu=(Math.random()*3)|0;
+            if(cpu===giocata){
+                return true;
+            }else{
+                if((cpu===1 && giocata===0) || (cpu===2 && giocata === 1) || (cpu=== 0 && giocata === 2)) {
+                    this.#puntiCPU++;
+                    this.#lastPlay=true;
+                }else{
+                    this.#puntiGiocatore++;
+                    this.#lastPlay=false;
+                }
+                this.#mani--;
+            }
+        }
+    }
+    isEndend(){
+        return this.#mani<=0;
+    }
+    lastWinnerIsCPU(){
+        return this.#lastPlay;
+    }
+
+}
