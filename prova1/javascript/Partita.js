@@ -3,6 +3,7 @@ class Partita{
       #puntiCPU=0;
       #puntiGiocatore=0;
       #lastPlay=true;
+      #lastCPU="";
     constructor(mani) {
         this.#mani=mani;
         this.#puntiCPU=0;
@@ -29,11 +30,11 @@ class Partita{
      */
       gioca(giocata){
         if(this.#mani>0){
-            let cpu=(Math.random()*3)|0;
-            if(cpu===giocata){
+            this.#lastCPU=(Math.random()*3)|0;
+            if(this.#lastCPU===giocata){
                 return true;
             }else{
-                if((cpu===1 && giocata===0) || (cpu===2 && giocata === 1) || (cpu=== 0 && giocata === 2)) {
+                if((this.#lastCPU===1 && giocata===0) || (this.#lastCPU===2 && giocata === 1) || (this.#lastCPU=== 0 && giocata === 2)) {
                     this.#puntiCPU++;
                     this.#lastPlay=true;
                 }else{
@@ -55,5 +56,22 @@ class Partita{
         this.#puntiGiocatore=0;
         this.#puntiCPU=0;
     }
-
+      getLastCPU(){
+          return this.#lastCPU;
+    }
+      static decodifica(val){
+          switch (val){
+              case 0:
+                  return "carta";
+              case 1:
+                  return "forbice";
+              case 2:
+                  return "sasso";
+              default:
+                  return "input non valido";
+          }
+    }
+     getHandString(scelta){
+          return "hai giocato "+Partita.decodifica(scelta)+" contro "+Partita.decodifica(this.#lastCPU)+". Hai "+(this.#lastPlay?"perso":"vinto");
+     }
 }

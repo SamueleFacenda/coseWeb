@@ -12,15 +12,16 @@
     line-height: 5em;
     font-size: large;
     font-weight: bold;
+    border-radius: 20px;
 }
 .foot{
     text-align: center;
     padding-top: 1em;
-    height: 8em;
+    height: 15em;
+    margin: 0px;
 }
 .intestation{
     background-color: #03f8fc;
-    border-radius: 20px;
 }
 .widht-center{
     width: 70%;
@@ -30,4 +31,63 @@
 .myFrame{
     border: white;
     height:40em;
+}
+.myLbl{
+    text-align: center;
+    font-size: large;
+    width: inherit;
+    margin-top: 2em;
+}
+.centered{
+    width: max-content;
+    text-align: center;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.inputCenter{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+.button {
+    padding: 15px 25px;
+    font-size: 24px;
+    text-align: center;
+    cursor: pointer;
+    outline: none;
+    color: #fff;
+    background-color: #03f8fc;
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 9px #999;
+}
+
+.button:hover {
+    background-color: #02998c
+}
+
+.button:active {
+    background-color: #02998c;
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
+.table{
+    margin-top: 3em;
+    border-collapse: separate;
+    border-spacing: 40px;
+    column-gap: 40px;
+}
+.secondTable{
+    border-collapse: collapse;
+    margin-top: 3em;
+}
+.borderBlack{
+    border: 1px solid black;
+}
+.biggerText{
+    font-size: large;
+}
+.thirdCol{
+    width: 33%;
 }

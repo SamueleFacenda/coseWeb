@@ -4,22 +4,44 @@
     <script src="../javascript/Partita.js"></script>
 </head>
 <body>
-    <div>scegliere la giocata</div>
     <br>
-    <button type="button" onclick="gioca(1)">forbici</button>
+    <div class="centered biggerText">scegliere la giocata</div>
+    <table class="table centered">
+        <tr>
+            <td class="thirdCol">
+                <button class="button" type="button" onclick="gioca(1)">
+                    <img src="https://img.icons8.com/ios/100/000000/hand-scissors--v1.png"/>
+                </button>
+            </td>
+            <td class="thirdCol">
+                <button class="button" type="button" onclick="gioca(0)">
+                    <img src="https://img.icons8.com/ios/100/000000/hand.png"/>
+                </button>
+            </td>
+            <td class="thirdCol">
+                <button class="button" type="button" onclick="gioca(2)">
+                    <img src="https://img.icons8.com/ios/100/000000/hand-rock.png"/>
+                </button>
+            </td>
+        </tr>
+    </table>
+    <table class="centered secondTable">
+        <tr>
+            <th class="borderBlack">punti</th>
+            <th class="borderBlack">CPU</th>
+            <th class="borderBlack">giocatore</th>
+        </tr>
+        <tr>
+            <td class="borderBlack"></td>
+            <td id="cpu" class="borderBlack"></td>
+            <td id="giocatore" class="borderBlack"></td>
+        </tr>
+        <tr>
+            <td colspan="2" class="borderBlack">mani mancanti: </td>
+            <td id="mani" class="borderBlack"></td>
+        </tr>
+    </table>
     <br>
-    <button type="button" onclick="gioca(0)">carta</button>
-    <br>
-    <button type="button" onclick="gioca(2)">sasso</button>
-    <br>
-    <br>
-    <div id="esito"></div>
-    <br>
-    <div>cpu: <span id="cpu"></span></div>
-    <br>
-    <div>giocatore: <span id="giocatore"></span></div>
-    <br>
-    <div>mani rimaste: <span id="mani"></span></div>
-    <br>
+    <div id="esito" class="centered"></div><br><br>
 </body>
 <script src="../javascript/mano.js"></script>
