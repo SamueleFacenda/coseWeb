@@ -2,9 +2,9 @@ let esito="";
 if(parent.partita.getPuntiCPU()===parent.partita.getPuntiGiocatore())
     esito="pareggio";
 else if(parent.partita.getPuntiCPU() > parent.partita.getPuntiGiocatore())
-    esito="hai perso";
+    esito="ha vinto la CPU";
 else
-    esito="hai vinto";
+    esito="ha vinto "+parent.partita.getNome();
 document.getElementById("esito").innerHTML=esito;
 parent.partita.reset();
 function goOn(){

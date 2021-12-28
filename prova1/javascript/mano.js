@@ -8,7 +8,7 @@ function update(){
 update();
 function gioca(scelta){
     if(! parent.partita.isEndend()){
-        if(! parent.partita.gioca(scelta)){
+        if(! parent.partita.tira(scelta)){
             update();
             document.getElementById("esito").innerHTML=parent.partita.getHandString(scelta);
         }else{

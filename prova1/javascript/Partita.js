@@ -4,11 +4,13 @@ class Partita{
       #puntiGiocatore=0;
       #lastPlay=true;
       #lastCPU="";
-    constructor(mani) {
+      #nome;
+    constructor(mani, nome) {
         this.#mani=mani;
         this.#puntiCPU=0;
         this.#puntiGiocatore=0;
         this.#lastPlay=false;//false cpu, true giocatore(l'ultimo che ha vinto)
+        this.#nome=nome;
     }
       getPuntiCPU(){
         return this.#puntiCPU;
@@ -28,7 +30,7 @@ class Partita{
      * @param giocata scelta del giocatore
      * @returns {boolean} se ha pareggiato
      */
-      gioca(giocata){
+      tira(giocata){
         if(this.#mani>0){
             this.#lastCPU=(Math.random()*3)|0;
             if(this.#lastCPU===giocata){
@@ -44,6 +46,9 @@ class Partita{
                 this.#mani--;
             }
         }
+    }
+    getNome(){
+          return this.#nome;
     }
       isEndend(){
         return this.#mani<=0;
@@ -72,6 +77,6 @@ class Partita{
           }
     }
      getHandString(scelta){
-          return "hai giocato "+Partita.decodifica(scelta)+" contro "+Partita.decodifica(this.#lastCPU)+". Hai "+(this.#lastPlay?"perso":"vinto");
+          return ""+this.#nome+" ha giocato "+Partita.decodifica(scelta)+", la CPU ha giocato "+Partita.decodifica(this.#lastCPU)+". Hai "+(this.#lastPlay?"perso":"vinto");
      }
 }
