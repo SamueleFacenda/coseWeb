@@ -52,8 +52,13 @@ class Board extends React.Component{
 }
 
 var root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(<Board/>);
 
 function reload(){
     root.render(<Board/>);
 }
+
+
+root.render(
+    <Board/>
+);
+
