@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head> 
+        <meta charset="utf-8">
+        <title>Facenda & Trentinaglia json fetch Website</title>
+        <!-- import css from style.css-->
+        <link rel="stylesheet" href="style.css">
+        <script src="./canvasjs.min.js"></script>
+        <link href="https://fonts.googleapis.com/css2?family=Fuzzy+Bubbles&family=Josefin+Sans:wght@300&family=Rubik&family=Silkscreen&display=swap" rel="stylesheet">
+    </head>
+    <body>
+        <!--
+            color:
+            turquiouse: 	#40E0D0
+            coral:             #FF7F50
+        -->
+        <div class="container">
+            <h2 class=" title bubble">Dati energia</h2>
+            <div class="bubble tabellaContainer">
+                <table class="center tabella">
+                    <th colspan='3'>energia</th>
+                    <tr><td>day</td><td>year</td><td>total</td></tr>
+                    <tr><td id="day_energy1"></td><td id="year_energy1"></td><td id="total_energy1"></td></tr>
+                    <tr><td id="day_energy2"></td><td id="year_energy2"></td><td id="total_energy2"></td></tr>
+                    <tr><td id="day_energy3"></td><td id="year_energy3"></td><td id="total_energy3"></td></tr>
+                    <tr><td id="day_energy4"></td><td id="year_energy4"></td><td id="total_energy4"></td></tr>
+                </table>
+            </div>
+            <br>
+            <div class="grafico bubble"> 
+                <div id="chartContainer"></div>
+            </div>
+        </div>
+    <script src="script.js"></script>
+    </body>
+</html>
