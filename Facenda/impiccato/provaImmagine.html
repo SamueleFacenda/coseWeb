@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Facenda impiccato gioco</title>
+        <script src="https://unpkg.com/babel-standalone@6/babel.js"></script>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <div id="root"></div>
+        <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>  
+        <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+        <script type="text/babel" src="figura.js"></script>
+        <script type="text/babel" >
+            function FiguraConImmagini(props){
+                return <div className="figura">
+                    <img src={props.img} alt="figura"/>
+                </div>
+            }
+            class ProvaUpdateImmagine extends React.Component{
+                constructor(props){
+                    super(props);
+                    this.defImage = 'https://via.placeholder.com/';
+                    this.state = {
+                        img: this.defImage + '1',
+                        count : 50
+                    };
+                    this.handleClick = this.handleClick.bind(this);
+                }
+                /*
+                handleClick(){
+                    this.setState({
+                        img: "https://i.ibb.co/5K5F5v0/2.png"
+                    });
+                }*/
+                handleClick(){
+                    this.setState((state) => {
+                        return {
+                            img: this.defImage + (state.count + 1),
+                            count: state.count + 1
+                        }
+                    });
+                }
+                render(){
+                    return <div>
+                        <FiguraConImmagini img={this.state.img}/>
+                        <button onClick={this.handleClick}>Cambia immagine</button>
+                    </div>
+                }
+            }
+            ReactDOM.render(
+                <ProvaUpdateImmagine />,
+                document.getElementById('root')
+            );
+        </script>
+    </body>
+</html>
