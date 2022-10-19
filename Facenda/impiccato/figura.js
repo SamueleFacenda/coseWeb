@@ -40,6 +40,9 @@ function useCanvasHangman(){
         ctx.lineWidth = 2;
     };
     const canvasVinto = function(ctx){
+        //disegno tutto l'omino
+        for(let i = 0; i <=5; i++)
+            drawArray[i](ctx);
         ctx.beginPath();
         ctx.arc(60, 25, 7, 0, Math.PI, false);
         ctx.stroke();
