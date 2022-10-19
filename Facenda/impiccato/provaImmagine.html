@@ -21,30 +21,44 @@
                 constructor(props){
                     super(props);
                     this.defImage = 'https://via.placeholder.com/';
+                    this.images = [] // definisci un array di immagini
+
+                    // placeholder immagini
+                    for(let i=0; i<10; i++){
+                        this.images.push(this.defImage + (i+1)*100);
+                    }
+
                     this.state = {
-                        img: this.defImage + '1',
-                        count : 50
+                        img: this.images[0],
+                        count : 0
                     };
-                    this.handleClick = this.handleClick.bind(this);
+                    this.handleClickDopo = this.handleClickDopo.bind(this);
+                    this.handleClickPrima = this.handleClickPrima.bind(this);
                 }
-                /*
-                handleClick(){
-                    this.setState({
-                        img: "https://i.ibb.co/5K5F5v0/2.png"
-                    });
-                }*/
-                handleClick(){
+                handleClickPrima(){
                     this.setState((state) => {
+                        let newNumber = state.count - 1;
+                        newNumber = newNumber < 0 ? this.images.length - 1 : newNumber;
                         return {
-                            img: this.defImage + (state.count + 1),
-                            count: state.count + 1
+                            img: this.images[newNumber],
+                            count: newNumber
+                        }
+                    });
+                }
+                handleClickDopo(){
+                    this.setState((state) => {
+                        let newNumber = (state.count + 1) % this.images.length;
+                        return {
+                            img: this.images[newNumber],
+                            count: newNumber
                         }
                     });
                 }
                 render(){
                     return <div>
                         <FiguraConImmagini img={this.state.img}/>
-                        <button onClick={this.handleClick}>Cambia immagine</button>
+                        <button onClick={this.handleClickPrima}>immagine prima</button>
+                        <butto onClick={this.handleClickDopo}>immagine dopo</butto>
                     </div>
                 }
             }
