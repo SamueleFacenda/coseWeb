@@ -25,19 +25,20 @@ class Form extends React.Component{
         this.handleUserChange = this.handleUserChange.bind(this);
     }
     checkPswMatch(){
-        return this.state.psw == this.state.psw2;
+        return this.state.psw === this.state.psw2;
     }
     checkPasswordRegex(){
         
     }
     handleSubmit(event){
-        if(this.state.user == ""){
+        if(this.state.user === ""){
             this.setState({user_valid: false});
             event.preventDefault();
             return;
         }
         if(this.state.valid){
             alert("Form submitted!");
+
             this.setState({user: "", psw: "", psw2: ""});
             event.preventDefault();
         }else{
@@ -46,7 +47,7 @@ class Form extends React.Component{
         }
     }
     handlePswChange(event){
-        var psw_match = event.target.value == this.state[event.target.name.endsWith("2") ? "psw" : "psw2"];
+        var psw_match = event.target.value === this.state[event.target.name.endsWith("2") ? "psw" : "psw2"];
         var regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
         let psw_valid = regex.test(event.target.value);
         this.setState({
