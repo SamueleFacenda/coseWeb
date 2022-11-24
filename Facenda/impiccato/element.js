@@ -67,7 +67,7 @@ class Game extends React.Component{
             <Parola parola={this.state.letteraRedacted}/>
             <br></br>
             <Lettere lettere={this.state.lettere} clickLetter={this.clickLetter}/>
-            <WinningPane vinto={this.game.isGameWon()} perso={this.game.isGameOver()} reset={this.handleReset}/>
+            <WinningPane vinto={this.game.isGameWon()} perso={this.game.isGameOver()} parola={this.game.parola} reset={this.handleReset}/>
             <Figura vite={this.state.vite} vinto={this.game.isOver()?this.game.isGameWon():null}/>
         </div>
     }
