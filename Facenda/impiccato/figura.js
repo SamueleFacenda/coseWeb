@@ -66,6 +66,7 @@ function useCanvasHangman(){
         ctx.arc(62, 22, 1, 0, Math.PI*2, true);
         ctx.stroke();
         */
+       
         //occhi a croce
         draw(ctx, 55, 20, 59, 24);
         draw(ctx, 59, 20, 55, 24);
