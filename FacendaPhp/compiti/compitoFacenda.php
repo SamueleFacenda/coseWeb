@@ -1,18 +1,15 @@
 <?php
 $uploaded = false;
 $text = "";
-$counter = 0;
 if(!isset($_COOKIE["counter"])){
     setcookie("counter", 0, time() + (86400 * 30), "/");
-}else{
-    $counter = $_COOKIE["counter"];
 }
 if($_SERVER["REQUEST_METHOD"] == "POST"){
     $target_dir = "uploads/";
     $target_file = $target_dir . basename($_FILES["fileToUpload"]["name"]);
     $imageFileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
     try{
-        // Check if image file is a actual image or fake image
+        // Check if image file is an actual image or fake image
         if(isset($_POST["submit"])) {
             $check = getimagesize($_FILES["fileToUpload"]["tmp_name"]);
             if(!$check) {
@@ -35,14 +32,15 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
             $uploaded = true;
             // increment counter cookie
-            $counter++;
-            setcookie("counter", $counter, time() + (86400 * 30), "/");
+            setcookie("counter", $_COOKIE["counter"]+1, time() + (86400 * 30), "/");
         }
     } catch(Exception $e){
         $text = $e->getMessage();
     }
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,7 +50,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     <title>Document</title>
 </head>
 <body>
-    <form action="<?=$_SERVER['PHP_SELF']?>" method="post", enctype="multipart/form-data">
+    <form action="<?=$_SERVER['PHP_SELF']?>" method="post" enctype="multipart/form-data">
         <input type="file" name="fileToUpload" id="fileToUpload">
         <input type="submit" value="Upload Image" name="submit">
     </form>
@@ -63,8 +61,9 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     }else if ($_SERVER["REQUEST_METHOD"] == "POST" && $text == ""){
         echo "Sorry, there was an error uploading your file.";
     }
-    echo "You have uploaded " . $counter . " files";
+    echo  "You have uploaded" . $_COOKIE["counter"] . " files";
     ?>
+
 
     <?php include "footer.php"; ?>
 </body>

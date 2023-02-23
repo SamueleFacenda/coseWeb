@@ -83,27 +83,27 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
         <?php
     }else{
     ?>
-    <table>
-        <form action="<?= $_SERVER['PHP_SELF'] ?>", method="post">
-            <tr>
-                <td>Materia</td>
-                <td><input type="text" name="materia" required="required" pattern="<?=$reg_name?>"></td>
-            </tr>
-            <tr>
-                <td>Voto</td>
-                <td><input type="number" name="voto" required="required" min="<?=$min?>" max="<?=$max?>"></td>
-            </tr>
-            <tr>
-                <td>Mostra media</td>
-                <td><input type="checkbox" name="showaverage"></td>
-            </tr>
-            <tr>
-                <td colspan="2">
-                    <input type="submit" value="Invia">
-                </td>
-            </tr>
+        <form action="<?= $_SERVER['PHP_SELF'] ?>" method="post">
+            <table>
+                <tr>
+                    <td>Materia</td>
+                    <td><input type="text" name="materia" required="required" pattern="<?=$reg_name?>"></td>
+                </tr>
+                <tr>
+                    <td>Voto</td>
+                    <td><input type="number" name="voto" required="required" min="<?=$min?>" max="<?=$max?>"></td>
+                </tr>
+                <tr>
+                    <td>Mostra media</td>
+                    <td><input type="checkbox" name="showaverage"></td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <input type="submit" value="Invia">
+                    </td>
+                </tr>
+            </table>
         </form>
-    </table>
     <?php
     }
     ?>
