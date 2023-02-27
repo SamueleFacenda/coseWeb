@@ -21,8 +21,8 @@
 
     $show = 'home';
     // check if show is set
-    if (isset($_GET['show']))) {
-        $whitelist = ['home', 'notes', 'shared', 'logout'];
+    if (isset($_GET['show'])) {
+        $whitelist = ['home', 'notes', 'shared', 'logout', 'about'];
         // strict check if show is in whitelist
         if (in_array($_GET['show'], $whitelist, true)) {
             $show = $_GET['show'];
@@ -78,7 +78,7 @@
                 <?php    
             }
         ?>
-        <li style="float:right"><a class="active" href="#about">About</a></li>
+        <li style="float:right"><a class="active" href="?show=about">About</a></li>
       </ul>
     <!-- import the right page -->
     <?php
