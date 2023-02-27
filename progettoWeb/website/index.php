@@ -19,19 +19,23 @@
         $username = $payload->username;
     }
 
-    $url = $_SERVER['REQUEST_URI'];
-    // set fragment, if any, else at home
-    $fragment = parse_url($url, PHP_URL_FRAGMENT);
-    if ($fragment == null || $fragment == "") {
-        $fragment = 'home';
+    $show = 'home';
+    // check if show is set
+    if (isset($_GET['show']))) {
+        $whitelist = ['home', 'notes', 'shared', 'logout'];
+        // strict check if show is in whitelist
+        if (in_array($_GET['show'], $whitelist, true)) {
+            $show = $_GET['show'];
+        }
     }
 
     // check if fragment is logout
-    if ($fragment === 'logout') {
+    if ($show === 'logout') {
         // delete jwt
         setcookie('jwt', '', time() - 3600, '/');
+        $username = null;
         // redirect to home
-        header('Location: /#home');
+        header('Location: index.php');
         exit();
     }
 ?>
@@ -51,9 +55,9 @@
 </head>
 <body>
     <ul>
-        <li><a href="#">Home</a></li>
-        <li><a href="#notes">Notes</a></li>
-        <li><a href="#shared">Shared</a></li>
+        <li><a href="?show=home">Home</a></li>
+        <li><a href="?show=notes">Notes</a></li>
+        <li><a href="?show=shared">Shared</a></li>
 
         <?php
             if($username == null){
@@ -63,7 +67,7 @@
                 <?php
             } else {
                 ?>
-                <li style="float: right"><a href="#logout">Logout</a></li>
+                <li style="float: right"><a href="?show=logout">Logout</a></li>
                 <li style="float: right">
                     <a href="pages/profile.php">
                     <!-- google icons person -->
@@ -78,7 +82,8 @@
       </ul>
     <!-- import the right page -->
     <?php
-        include_once 'pages/' . $fragment . '.php';
+        // path traversal ovunque
+        include_once 'pages/' . $show . '.php';
     ?>
 
 </body>
