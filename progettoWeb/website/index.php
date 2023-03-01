@@ -48,46 +48,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Notes by Samuele Facenda</title>
     <link rel="stylesheet" href="css/style.css">
-    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <!-- https://material-components.github.io/material-components-web-catalog/#/-->
 </head>
 <body>
-    <ul class="navbar">
-        <li class="navbar_item"><a class="navbar_link" href="?show=home">Home</a></li>
-        <li class="navbar_item"><a class="navbar_link" href="?show=notes">Notes</a></li>
-        <li class="navbar_item"><a class="navbar_link" href="?show=shared">Shared</a></li>
-        <li class="right navbar_item"><a class="active navbar_link" href="?show=about">About</a></li>
-        <?php
-            if($username == null){
-                ?>
-                <li class="right navbar_item"><a class="navbar_link" href="pages/login.php">Login</a></li>
-                <li class="right navbar_item"><a class="navbar_link" href="pages/register.php">Register</a></li>
-                <?php
-            } else {
-                ?>
-                <li class="right navbar_item"><a class="navbar_link" href="?show=logout">Logout</a></li>
-                <li class="right navbar_item">
-                    <a href="pages/profile.php" class="navbar_link">
-                        <!-- google icons person -->
-                        <i class="material-icons">person</i>
-                        <span class="username">
-                            <?= $username ?>
-                        </span>
-                    </a>
-                </li>
-                <?php
-            }
-        ?>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark fixed-top" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Notes</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="?show=home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="?show=notes">Notes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="?show=shared">Shared</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="?show=about">About</a>
+                    </li>
+                    <?php
+                    if($username == null){
+                        ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="pages/login.php">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="pages/register.php">Register</a>
+                        </li>
+                        <?php
+                    } else {
+                        ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="?show=logout">Logout</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="pages/profile.php">
+                                <?= $username ?>
+                            </a>
+                        </li>
+                        <?php
+                    }
+                    ?>
+                </ul>
 
-      </ul>
+            </div>
+        </div>
+    </nav>
     <!-- import the right page -->
     <?php
         // path traversal ovunque
         // forse meno con la whitelist
         include_once 'pages/' . $show . '.php';
     ?>
-
 </body>
 </html>
