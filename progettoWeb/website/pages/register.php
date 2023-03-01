@@ -5,12 +5,12 @@ $servername = "127.0.0.1";
 $username = "facenda5inc2022";
 $password = "";
 $dbname = "my_facenda5inc2022";
-/*
+
 $conn = new mysqli($servername, $username, $password, $dbname);
 if($conn->connect_error){
     die("Connection failed: " . $conn->connect_error);
 }
-*/
+
 
 // get secret from env
 $secret = getenv('JWT_SECRET');
