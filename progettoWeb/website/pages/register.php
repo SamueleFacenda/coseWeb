@@ -35,7 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // get user from db
         // $user = getUser($username);
         $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
-        $password = password_hash($password, PASSWORD_BCRYPT);
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();

@@ -37,8 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($result->num_rows > 0) {
             $user = $result->fetch_assoc();
             $user_password = $user['password'];
-            var_dump($user_password);
-            var_dump($password);
             // check if password is correct
             if (!password_verify($password, $user_password)) {
                 // wrong password
