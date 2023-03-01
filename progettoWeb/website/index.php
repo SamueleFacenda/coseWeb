@@ -53,7 +53,7 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark fixed-top" data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark sticky-top" data-bs-theme="dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">Notes</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,11 +103,14 @@
             </div>
         </div>
     </nav>
-    <!-- import the right page -->
-    <?php
+    <main role="main" class="container">
+        <!-- import the right page -->
+        <?php
         // path traversal ovunque
         // forse meno con la whitelist
         include_once 'pages/' . $show . '.php';
-    ?>
+        ?>
+    </main>
+
 </body>
 </html>
