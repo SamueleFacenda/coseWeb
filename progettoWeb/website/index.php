@@ -35,7 +35,7 @@
         setcookie('jwt', '', time() - 3600, '/');
         $username = null;
         // redirect to home
-        header('Location: index.php');
+        header('location: index.php');
         exit();
     }
 ?>
@@ -54,35 +54,38 @@
     <!-- https://material-components.github.io/material-components-web-catalog/#/-->
 </head>
 <body>
-    <ul>
-        <li><a href="?show=home">Home</a></li>
-        <li><a href="?show=notes">Notes</a></li>
-        <li><a href="?show=shared">Shared</a></li>
-
+    <ul class="navbar">
+        <li class="navbar_item"><a class="navbar_link" href="?show=home">Home</a></li>
+        <li class="navbar_item"><a class="navbar_link" href="?show=notes">Notes</a></li>
+        <li class="navbar_item"><a class="navbar_link" href="?show=shared">Shared</a></li>
+        <li class="right navbar_item"><a class="active navbar_link" href="?show=about">About</a></li>
         <?php
             if($username == null){
                 ?>
-                <li style="float: right"><a href="pages/login.php">Login</a></li>
-                <li style="float: right"><a href="pages/register.php">Register</a></li>
+                <li class="right navbar_item"><a class="navbar_link" href="pages/login.php">Login</a></li>
+                <li class="right navbar_item"><a class="navbar_link" href="pages/register.php">Register</a></li>
                 <?php
             } else {
                 ?>
-                <li style="float: right"><a href="?show=logout">Logout</a></li>
-                <li style="float: right">
-                    <a href="pages/profile.php">
-                    <!-- google icons person -->
-                    <i class="material-icons">person</i>
-                    <?php echo $username; ?>
+                <li class="right navbar_item"><a class="navbar_link" href="?show=logout">Logout</a></li>
+                <li class="right navbar_item">
+                    <a href="pages/profile.php" class="navbar_link">
+                        <!-- google icons person -->
+                        <i class="material-icons">person</i>
+                        <span class="username">
+                            <?= $username ?>
+                        </span>
                     </a>
                 </li>
-                <?php    
+                <?php
             }
         ?>
-        <li style="float:right"><a class="active" href="?show=about">About</a></li>
+
       </ul>
     <!-- import the right page -->
     <?php
         // path traversal ovunque
+        // forse meno con la whitelist
         include_once 'pages/' . $show . '.php';
     ?>
 

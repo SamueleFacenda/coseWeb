@@ -6,18 +6,12 @@
 -- ci possono anche essere dei commenti sulle note
 -- le note possono essere condivise con utenti specifici
 
--- creazione del database
-CREATE DATABASE IF NOT EXISTS webFacenda;
-
--- selezione del database
-USE webFacenda;
-
 -- creazione della tabella users
 DROP TABLE IF EXISTS users;
 CREATE TABLE users (
     id INT NOT NULL AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL,
-    password VARCHAR(50) NOT NULL,
+    password BINARY(60) NOT NULL,
     email VARCHAR(50) NOT NULL,
     edit_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     is_admin BOOLEAN NOT NULL DEFAULT FALSE,
@@ -30,7 +24,7 @@ CREATE TABLE notes (
     id INT NOT NULL AUTO_INCREMENT,
     label VARCHAR(50) NOT NULL,
     user_id INT NOT NULL,
-    date DATE NOT NULL DEFAULT CURRENT_DATE,
+    date DATE NOT NULL DEFAULT (CURRENT_DATE),
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );

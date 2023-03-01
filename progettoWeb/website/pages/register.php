@@ -2,9 +2,9 @@
 require_once '../utils/jwt.php';
 
 $servername = "127.0.0.1";
-$username = "samu";
-$password = getenv('DB_PASSWORD');
-$dbname = "samu";
+$username = "facenda5inc2022";
+$password = "";
+$dbname = "my_facenda5inc2022";
 $conn = new mysqli($servername, $username, $password, $dbname);
 if($conn->connect_error){
     die("Connection failed: " . $conn->connect_error);
@@ -23,6 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'];
     $password = $_POST['password'];
     $password2 = $_POST['password2'];
+    $email = $_POST['email'];
     $password_not_match = false;
     if ($password != $password2) {
         $password_not_match = true;
@@ -30,10 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username_already_exists = false;
 
     // check if username and password are not empty
-    if ($username != null && $password != null && !$password_not_match) {
+    if (!empty($username) && !empty($password) && !$password_not_match && !empty($email)){
         // get user from db
         // $user = getUser($username);
-        $stmt = $conn.prepareStatement("SELECT * FROM users WHERE username = ?");
+        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
         $password = password_hash($password, PASSWORD_BCRYPT);
         $stmt->bind_param("s", $username);
         $stmt->execute();
@@ -45,18 +46,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username_already_exists = true;
         }else{
             // create user
-            $stmt = $conn.prepareStatement("INSERT INTO users (username, password) VALUES (?, ?)");
+            $stmt = $conn->prepare("INSERT INTO users (username, password, email) VALUES (?, ?, ?)");
             $password = password_hash($password, PASSWORD_BCRYPT);
-            $stmt->bind_param("ss", $username, $password);
+            $stmt->bind_param("sss", $username, $password, $email);
             $stmt->execute();
 
             // create jwt
-            $jwt = createJwt((object) ['username' => $username], $secret);
+            $jwt = createJwt((object) ['username' => $username, 'admin' => 0], $secret);
             // set jwt cookie for one month
             setcookie('jwt', $jwt, time() + 3600 * 24 * 30 , '/');
             // redirect to home
-            header('Location: /index.php');
-            exit();
+            header('location: /index.php');
+            exit;
         }
     }
 }
@@ -71,14 +72,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <title>login</title>
 </head>
 <body>
-    <form action="pages/register.php" method="post">
+    <form action="/pages/register.php" method="post">
         <label for="username">Username</label>
         <input type="text" name="username" id="username">
+        <label for="email">email</label>
+         <input type="text" name="email" id="email">
         <label for="password">Password</label>
         <input type="password" name="password" id="password">
-        <input type="submit" value="Login">
+        <label for="password2">Repeat password</label>
         <input type="password" name="password2" id="password2">
-        <input type="submit" value="Login">
+        <input type="submit" value="Register">
     </form>
 
     <?php

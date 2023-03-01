@@ -21,10 +21,11 @@ function verifyJwt($jwt, $secret, $maxAge = 3600) {
         return false;
     }
     list($headb64, $payloadb64, $cryptob64) = $tks;
-    $header = json_decode(base64_decode($headb64));
-    $payload = json_decode(base64_decode($payloadb64));
-    $sig = base64_decode($cryptob64);
+    $header = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $headb64)));
+    $payload = json_decode(base64_decode(str_replace(['-', '_'], ['+', '/'], $payloadb64)));
+    $sig = base64_decode(str_replace(['-', '_'], ['+', '/'], $cryptob64));
     $expectedSig = hash_hmac('sha256', $headb64 . "." . $payloadb64, $secret, true);
+
     if ($sig != $expectedSig) {
         return false;
     }
