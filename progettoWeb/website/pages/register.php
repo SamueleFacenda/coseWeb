@@ -1,16 +1,7 @@
 <?php
 require_once '../utils/jwt.php';
 
-$servername = "127.0.0.1";
-$username = "facenda5inc2022";
-$password = "";
-$dbname = "my_facenda5inc2022";
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-if($conn->connect_error){
-    die("Connection failed: " . $conn->connect_error);
-}
-
+require_once '../utils/connection.php';
 
 // get secret from env
 $secret = getenv('JWT_SECRET');
@@ -35,23 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // check if username and password are not empty
     if (!empty($username) && !empty($password) && !$password_not_match && !empty($email)){
-        // get user from db
-        // $user = getUser($username);
-        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $stmt->close();
 
         // check if user exists
-        if ($result->num_rows > 0) {
-            $username_already_exists = true;
+        if (email_exists($username)) {
+            $email_already_exist = true;
         }else{
-            // create user
-            $stmt = $conn->prepare("INSERT INTO users (username, password, email) VALUES (?, ?, ?)");
-            $password = password_hash($password, PASSWORD_BCRYPT);
-            $stmt->bind_param("sss", $username, $password, $email);
-            $stmt->execute();
+            add_user($username, $email, $password);
 
             // create jwt
             $jwt = createJwt((object) ['username' => $username, 'admin' => 0], $secret);
@@ -67,15 +47,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>register</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
-</head>
+<?php
+    require_once '../static/head.php';
+    require_once '../static/navbar.php';
+?>
 <body>
     <section class="vh-100" style="background-color: #eee;">
         <div class="container h-100">
@@ -91,17 +66,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <i class="fas fa-user fa-lg me-3 fa-fw"></i>
                                             <div class="form-outline flex-fill mb-0">
                                                 <input name="username" type="text" id="form3Example1c"
-                                                       class="form-control <?php if($username_already_exists) echo 'is-invalid'; ?>" required/>
+                                                       class="form-control" required/>
                                                 <label class="form-label" for="form3Example1c">Your Name</label>
-                                                <div class="invalid-feedback">Username already exists</div>
                                             </div>
                                         </div>
 
                                         <div class="d-flex flex-row align-items-center mb-4">
                                             <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
                                             <div class="form-outline flex-fill mb-0">
-                                                <input name="email" type="email" id="form3Example3c" class="form-control" required/>
+                                                <input name="email" type="email" id="form3Example3c" class="form-control <?php if($username_already_exists) echo 'is-invalid'; ?>" required/>
                                                 <label class="form-label" for="form3Example3c">Your Email</label>
+                                                <div class="invalid-feedback">Email already exists</div>
                                             </div>
                                         </div>
 
@@ -145,5 +120,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
     </section>
+
+    <?php
+        require_once '../static/footer.php';
+    ?>
 </body>
 </html>

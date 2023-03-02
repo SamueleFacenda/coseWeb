@@ -1,116 +1,48 @@
-<?php
-    // define jwt lifetime of one month
-    $maxAge = 3600 * 24 * 30;
-    require_once 'utils/jwt.php';
 
-    // secret get env
-    $secret = getenv('JWT_SECRET');
-    // default secret
-    if ($secret == null){
-        $secret = 'segretissimo!!';
-    }
-
-
-    $username = null;
-    // set username if jwt is set
-    if(isset($_COOKIE['jwt']) && verifyJwt($_COOKIE['jwt'], $secret, $maxAge)){
-        $jwt = $_COOKIE['jwt'];
-        $payload = getJwtDat($jwt);
-        $username = $payload->username;
-    }
-
-    $show = 'home';
-    // check if show is set
-    if (isset($_GET['show'])) {
-        $whitelist = ['home', 'notes', 'shared', 'logout', 'about'];
-        // strict check if show is in whitelist
-        if (in_array($_GET['show'], $whitelist, true)) {
-            $show = $_GET['show'];
-        }
-    }
-
-    // check if fragment is logout
-    if ($show === 'logout') {
-        // delete jwt
-        setcookie('jwt', '', time() - 3600, '/');
-        $username = null;
-        // redirect to home
-        header('location: index.php');
-        exit();
-    }
-?>
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notes by Samuele Facenda</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-</head>
+<?php
+    // import head
+    include_once 'static/head.php';
+?>
 <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary bg-dark sticky-top" data-bs-theme="dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Notes</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="?show=home">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="?show=notes">Notes</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="?show=shared">Shared</a>
-                    </li>
-                </ul>
-                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link disabled" href="?show=about">About</a>
-                    </li>
-                    <?php
-                    if($username == null){
-                        ?>
-                        <li class="nav-item">
-                            <a class="nav-link" href="pages/login.php">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="pages/register.php">Register</a>
-                        </li>
-                        <?php
-                    } else {
-                        ?>
-                        <li class="nav-item">
-                            <a class="nav-link" href="?show=logout">Logout</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="pages/profile.php">
-                                <?= $username ?>
-                            </a>
-                        </li>
-                        <?php
-                    }
-                    ?>
-                </ul>
-
-            </div>
-        </div>
-    </nav>
+<?php
+    // import navbar
+    include_once 'static/navbar.php';
+?>
     <main role="main" class="container">
-        <!-- import the right page -->
-        <?php
-        // path traversal ovunque
-        // forse meno con la whitelist
-        include_once 'pages/' . $show . '.php';
-        ?>
+        <section class="text-center">
+            <div class="container">
+                <h1 class="display-3">Take Notes, Start Here</h1>
+                <p class="lead text-muted">
+                    Take note of what you do, analyze them. Keeping your life organized is easier when you know what
+                    you have done!
+                </p>
+                <p>
+                    <a href="index.php?show=register" class="btn btn-primary my-2">Sign up!</a>
+                    <a href="index.php?show=login" class="btn btn-secondary my-2">Sign in</a>
+                </p>
+            </div>
+        </section>
     </main>
+
+<?php
+if (isset($_POST['toast'])){ ?>
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <img src="..." class="rounded mr-2" alt="...">
+            <strong class="mr-auto">Notes By Samuele</strong>
+            <small class="text-muted">11 mins ago</small>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="toast-body">
+            New user registered
+        </div>
+    </div>
+    <?php } ?>
 
 </body>
 </html>

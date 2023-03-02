@@ -1,15 +1,7 @@
 <?php
 require_once '../utils/jwt.php';
 
-$servername = "127.0.0.1";
-$username = "facenda5inc2022";
-$password = "";
-$dbname = "my_facenda5inc2022";
-$conn = new mysqli($servername, $username, $password, $dbname);
-if($conn->connect_error){
-    die("Connection failed: " . $conn->connect_error);
-}
-
+require_once '../utils/connection.php';
 
 // get secret from env
 $secret = getenv('JWT_SECRET');
@@ -21,21 +13,18 @@ $wrong_credentials = false;
 // if request is post
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // get data from post
-    $username = $_POST['username'];
+    $email = $_POST['email'];
     $password = $_POST['password'];
 
     // check if username and password are not empty
-    if ($username != null && $password != null) {
-        // get user from db
-        // $user = getUser($username);
-        $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
+    if (!empty($email) && !empty($password)){
 
-        // check if user exists
-        if ($result->num_rows > 0) {
-            $user = $result->fetch_assoc();
+        $user = getUser($email);
+        if ($user == null) {
+            // username not found
+            $wrong_credentials = true;
+        }else{
+
             $user_password = $user['password'];
             // check if password is correct
             if (!password_verify($password, $user_password)) {
@@ -43,16 +32,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $wrong_credentials = true;
             }else{
                 // create jwt
-                $jwt = createJwt((object) ['username' => $username, 'admin' => $user['is_admin'] ? 1:0], $secret);
+                $jwt = createJwt((object) ['username' => $user['username'], 'email' => $user['email'], 'admin' => $user['is_admin'] ? 1:0], $secret);
                 // set jwt cookie for one month
                 setcookie('jwt', $jwt, time() + 3600 * 24 * 30 , '/');
                 // redirect to home
-                header('location: /index.php');
+                header('location: /index.php?toast=""');
                 exit;
             }
-        }else{
-            // username not found
-            $wrong_credentials = true;
         }
     }
 }
