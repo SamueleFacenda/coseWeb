@@ -9,33 +9,34 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="?show=home">Home</a>
+                    <a class="nav-link active" aria-current="page" href="/index.php">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="?show=notes">Notes</a>
+                    <a class="nav-link" href="/pages/notes.php">Notes</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="?show=shared">Shared</a>
+                    <a class="nav-link" href="/pages/shared.php">Shared</a>
                 </li>
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link disabled" href="?show=about">About</a>
+                    <a class="nav-link disabled" href="/pages/about.php">About</a>
                 </li>
                 <?php
+                global $username;
                 if(isset($username)){
                     ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="?show=login">Login</a>
+                        <a class="nav-link" href="/pages/login.php">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="?show=register">Register</a>
+                        <a class="nav-link" href="/pages/register.php">Register</a>
                     </li>
                     <?php
                 } else {
                     ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="?show=logout">Logout</a>
+                        <a class="nav-link" href="/pages/logout.php">Logout</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="pages/profile.php">

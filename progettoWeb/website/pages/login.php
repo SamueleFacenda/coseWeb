@@ -18,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // check if username and password are not empty
     if (!empty($email) && !empty($password)){
+        // get user from db
+        connect();
 
         $user = getUser($email);
         if ($user == null) {
@@ -44,15 +46,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>login</title>
-</head>
-<body>
+
+<?php
+    require_once '../static/head.php';
+    echo '<body>';
+    require_once '../static/navbar.php';
+?>
     <form action="/pages/login.php" method="post">
         <label for="username">Username</label>
         <input type="text" name="username" id="username" required>
@@ -67,5 +66,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <h2> You're not registered yet? <a href="/pages/register.php">Sign up here</a> </h2>
 
+<?php
+    require_once '../static/footer.php';
+?>
 </body>
 </html>

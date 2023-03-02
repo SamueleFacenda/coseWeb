@@ -1,12 +1,16 @@
 <?php
 
-$servername = "127.0.0.1";
-$username = "facenda5inc2022";
-$password = "";
-$dbname = "my_facenda5inc2022";
-$conn = new mysqli($servername, $username, $password, $dbname);
-if($conn->connect_error){
-    die("Connection failed: " . $conn->connect_error);
+function connect()
+{
+    $servername = "127.0.0.1";
+    $username = "facenda5inc2022";
+    $password = "";
+    $dbname = "my_facenda5inc2022";
+    global $conn;
+    $conn = new mysqli($servername, $username, $password, $dbname);
+    if ($conn->connect_error) {
+        die("Connection failed: " . $conn->connect_error);
+    }
 }
 
 function email_exists($email): bool
@@ -30,7 +34,7 @@ function username_exists($username){
     return $result->num_rows > 0;
 }
 
-function get_user($email): array|null
+function get_user($email): ?array
 {
     global $conn;
     $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");

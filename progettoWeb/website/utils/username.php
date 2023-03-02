@@ -11,6 +11,7 @@ if ($secret == null){
 }
 
 
+global $username;
 $username = null;
 // set username if jwt is set
 if(isset($_COOKIE['jwt']) && verifyJwt($_COOKIE['jwt'], $secret, $maxAge)){

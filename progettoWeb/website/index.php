@@ -5,11 +5,9 @@
 <?php
     // import head
     include_once 'static/head.php';
-?>
-<body>
-<?php
-    // import navbar
+    echo '<body>';
     include_once 'static/navbar.php';
+
 ?>
     <main role="main" class="container">
         <section class="text-center">
@@ -20,8 +18,8 @@
                     you have done!
                 </p>
                 <p>
-                    <a href="index.php?show=register" class="btn btn-primary my-2">Sign up!</a>
-                    <a href="index.php?show=login" class="btn btn-secondary my-2">Sign in</a>
+                    <a href="/pages/register.php" class="btn btn-primary my-2">Sign up!</a>
+                    <a href="/pages/login.php" class="btn btn-secondary my-2">Sign in</a>
                 </p>
             </div>
         </section>
@@ -42,7 +40,8 @@ if (isset($_POST['toast'])){ ?>
             New user registered
         </div>
     </div>
-    <?php } ?>
-
+    <?php }
+    include_once 'static/footer.php';
+?>
 </body>
 </html>

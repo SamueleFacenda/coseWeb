@@ -7,7 +7,7 @@ echo '<body>';
 include_once '../static/navbar.php';
 ?>
 <section class="text-center">
-    <h1>shared</h1>
+    <h1>profile</h1>
 </section>
 <?php
 include_once '../static/footer.php';

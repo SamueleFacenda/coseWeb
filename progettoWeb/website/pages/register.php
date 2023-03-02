@@ -26,6 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // check if username and password are not empty
     if (!empty($username) && !empty($password) && !$password_not_match && !empty($email)){
+        connect();
 
         // check if user exists
         if (email_exists($username)) {
