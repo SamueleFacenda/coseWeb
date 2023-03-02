@@ -64,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h2>Wrong credentials</h2>
     <?php endif; ?>
 
-    <h2> You're not registered yet? <a href="/pages/register.php">Sign up here</a> </h2>
+    <h2> You're not registered yet? <a href="register.php">Sign up here</a> </h2>
 
 <?php
     require_once '../static/footer.php';
