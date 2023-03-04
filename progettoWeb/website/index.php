@@ -40,8 +40,9 @@
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
-                Hello <?= /** @noinspection PhpUndefinedVariableInspection */
-                $username ?>!, User registered successfully!
+                Hello <?= /** @noinspection PhpUndefinedVariableInspection */$username ?>!,
+                <!-- XSS Ocio -->
+                User <?= $_GET['toast']?> successfully!
             </div>
         </div>
     </div>

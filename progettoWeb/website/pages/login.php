@@ -36,9 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // create jwt
                 $jwt = createJwt((object) ['username' => $user['username'], 'email' => $user['email'], 'admin' => $user['is_admin'] ? 1:0], $secret);
                 // set jwt cookie for one month
-                setcookie('jwt', $jwt, time() + 3600 * 24 * 30 , '/');
+                setcookie('jwt', $jwt, time() + 3600 * 24 * 30 , '/', httponly: true);
                 // redirect to home
-                header('location: /index.php?toast=""');
+                header('location: /index.php?toast=logged');
                 exit;
             }
         }
