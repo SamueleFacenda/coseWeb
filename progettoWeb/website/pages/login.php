@@ -50,6 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php
     require_once '../static/head.php';
     echo '<body>';
+    include_once '../utils/username.php';
     require_once '../static/navbar.php';
 ?>
     <form action="/pages/login.php" method="post">

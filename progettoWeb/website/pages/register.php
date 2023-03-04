@@ -50,9 +50,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <?php
     require_once '../static/head.php';
+    include_once '../utils/username.php';
+    echo '<body>';
     require_once '../static/navbar.php';
 ?>
-<body>
     <section class="vh-100" style="background-color: #eee;">
         <div class="container h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">

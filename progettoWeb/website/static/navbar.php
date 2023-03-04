@@ -21,8 +21,7 @@
                     <a class="nav-link disabled" href="/pages/about.php">About</a>
                 </li>
                 <?php
-                global $username;
-                if(isset($username)){
+                if(!isset($username)){
                     ?>
                     <li class="nav-item">
                         <a class="nav-link" href="/pages/login.php">Login</a>
