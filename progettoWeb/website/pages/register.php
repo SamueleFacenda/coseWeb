@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // set jwt cookie for one month
             setcookie('jwt', $jwt, time() + 3600 * 24 * 30 , '/');
             // redirect to home
-            header('location: /index.php');
+            header('location: /index.php?toast');
             exit;
         }
     }
@@ -50,11 +50,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <?php
     require_once '../static/head.php';
+    include_once '../utils/jwt.php';
     include_once '../utils/username.php';
     echo '<body>';
     require_once '../static/navbar.php';
 ?>
-    <section class="vh-100" style="background-color: #eee;">
+    <section class="vh-100 pt-5" style="background-color: #eee;">
         <div class="container h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
                 <div class="col-lg-12 col-xl-11">

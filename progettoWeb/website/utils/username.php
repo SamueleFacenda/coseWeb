@@ -1,7 +1,6 @@
 <?php
 // define jwt lifetime of one month
 $maxAge = 3600 * 24 * 30;
-require_once 'utils/jwt.php';
 
 // secret get env
 $secret = getenv('JWT_SECRET');

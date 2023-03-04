@@ -4,6 +4,7 @@
 // import head
 include_once '../static/head.php';
 echo '<body>';
+include_once '../utils/jwt.php';
 include_once '../utils/username.php';
 include_once '../static/navbar.php';
 ?>

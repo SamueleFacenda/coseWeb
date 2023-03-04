@@ -6,6 +6,7 @@
     // import head
     include_once 'static/head.php';
     echo '<body>';
+    include_once 'utils/jwt.php';
     include_once 'utils/username.php';
     include_once 'static/navbar.php';
 
@@ -26,23 +27,35 @@
         </section>
     </main>
 
-<?php
-if (isset($_POST['toast'])){ ?>
-    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="toast-header">
-            <img src="..." class="rounded mr-2" alt="...">
-            <strong class="mr-auto">Notes By Samuele</strong>
-            <small class="text-muted">11 mins ago</small>
-            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        <div class="toast-body">
-            New user registered
+
+    <!-- Hidden Toast -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <!--
+                <img src="..." class="rounded me-2" alt="...">
+                -->
+                <strong class="me-auto">Notes</strong>
+                <small>now</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Hello <?= /** @noinspection PhpUndefinedVariableInspection */
+                $username ?>!, User registered successfully!
+            </div>
         </div>
     </div>
-    <?php }
+<?php
     include_once 'static/footer.php';
+    if (isset($_GET['toast'])){ ?>
+        <script>
+            // Show toast
+            const toastLiveExample = document.getElementById('liveToast')
+            const toast = new bootstrap.Toast(toastLiveExample)
+            toast.show()
+
+        </script>
+    <?php }
 ?>
 </body>
 </html>
