@@ -9,7 +9,7 @@ if ($secret == null){
     $secret = 'segretissimo!!';
 }
 $password_not_match = false;
-$username_already_exists = false;
+$email_already_exist = false;
 
 // if request is post
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -29,10 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         connect();
 
         // check if user exists
-        if (email_exists($username)) {
+        if (email_exists($email)) {
             $email_already_exist = true;
         }else{
-            add_user($username, $email, $password);
+            add_user($username, $password, $email);
 
             // create jwt
             $jwt = createJwt((object) ['username' => $username, 'admin' => 0], $secret);
@@ -50,7 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 <?php
     require_once '../static/head.php';
-    include_once '../utils/jwt.php';
     include_once '../utils/username.php';
     echo '<body>';
     require_once '../static/navbar.php';
@@ -69,15 +68,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <i class="fas fa-user fa-lg me-3 fa-fw"></i>
                                             <div class="form-outline flex-fill mb-0">
                                                 <input name="username" type="text" id="form3Example1c"
-                                                       class="form-control" required/>
-                                                <label class="form-label" for="form3Example1c">Your Name</label>
+                                                       class="form-control" required value="<?php if(isset($_POST['username'])) echo htmlspecialchars($_POST['username']); ?>"/>
+                                                <label class="form-label" for="form3Example1c">Your Username</label>
                                             </div>
                                         </div>
 
                                         <div class="d-flex flex-row align-items-center mb-4">
                                             <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
                                             <div class="form-outline flex-fill mb-0">
-                                                <input name="email" type="email" id="form3Example3c" class="form-control <?php if($username_already_exists) echo 'is-invalid'; ?>" required/>
+                                                <input name="email" type="email" id="form3Example3c" class="form-control<?php if($email_already_exist) echo ' is-invalid'; ?>" required
+                                                       value="<?php if(isset($_POST['email']) && !$email_already_exist) echo htmlspecialchars($_POST['email']) ?>"/>
                                                 <label class="form-label" for="form3Example3c">Your Email</label>
                                                 <div class="invalid-feedback">Email already exists</div>
                                             </div>
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <div class="d-flex flex-row align-items-center mb-4">
                                             <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
                                             <div class="form-outline flex-fill mb-0">
-                                                <input name="password" type="password" id="form3Example4c"
+                                                <input name="password" type="password" id="form3Example4c" value="<?php if(isset($_POST['password'])) echo htmlspecialchars($_POST['password']) ?>"
                                                        class="form-control <?php if($password_not_match) echo 'is-invalid'; ?>" required/>
                                                 <label class="form-label" for="form3Example4c">Password</label>
                                                 <div class="invalid-feedback">Passwords does not match</div>
@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             <button type="submit" class="btn btn-primary btn-lg">Register</button>
                                         </div>
                                         <div class="text-center">
-                                            <p>Already a member? <a href="login.php">Login</a></p>
+                                            <p>Already a member? <a href="/pages/login.php">Login</a></p>
                                         </div>
                                     </form>
                                 </div>
