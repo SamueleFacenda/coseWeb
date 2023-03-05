@@ -17,4 +17,5 @@ if(isset($_COOKIE['jwt']) && verifyJwt($_COOKIE['jwt'], $secret, $maxAge)){
     $jwt = $_COOKIE['jwt'];
     $payload = getJwtDat($jwt);
     $username = $payload->username;
+    $email = $payload->email;
 }

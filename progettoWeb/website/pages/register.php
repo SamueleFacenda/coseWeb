@@ -35,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             add_user($username, $password, $email);
 
             // create jwt
-            $jwt = createJwt((object) ['username' => $username, 'admin' => 0], $secret);
+            $jwt = createJwt((object) ['username' => $username, 'email' => $email, 'admin' => 0], $secret);
             // set jwt cookie for one month
             setcookie('jwt', $jwt, time() + 3600 * 24 * 30 , '/', httponly: true);
             // redirect to home
