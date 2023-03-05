@@ -52,8 +52,8 @@ include_once '../static/navbar.php';
         <div class="container text-center">
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4">
                 <?php foreach($notes as $note): ?>
-                    <div class="col">
-                        <div class="card">
+                    <div class="col col-sm-6 mb-3 h-100">
+                        <div class="card h-100">
                             <div class="card-body">
                                 <h5 class="card-title"><?=$note['label']?> </h5>
                                 <h6 class="card-subtitle mb-2 text-muted"><?=$note['date']?></h6>
