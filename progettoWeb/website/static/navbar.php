@@ -36,7 +36,7 @@
                         <a class="nav-link" href="/pages/logout.php">Logout</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="pages/profile.php">
+                        <a class="nav-link" href="/pages/profile.php">
                             <?= $username ?>
                         </a>
                     </li>

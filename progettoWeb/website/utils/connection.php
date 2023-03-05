@@ -77,7 +77,7 @@ function add_note($email, $label, $comment=NULL): void
     }
 }
 
-function get_notes($email, $limit=18446744073709551615, $offset=0): ?array
+function get_notes($email, $limit=100, $offset=0): ?array
 {
     global $conn;
     $stmt = $conn->prepare("SELECT label, text, notes.id as note_id, comments.note_id as comment_id, date FROM notes".
