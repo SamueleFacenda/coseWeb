@@ -42,7 +42,7 @@
             <div class="toast-body">
                 Hello <?= /** @noinspection PhpUndefinedVariableInspection */$username ?>!,
                 <!-- XSS Ocio -->
-                User <?= $_GET['toast']?> successfully!
+                User <?= htmlspecialchars($_GET['toast'])?> successfully!
             </div>
         </div>
     </div>
