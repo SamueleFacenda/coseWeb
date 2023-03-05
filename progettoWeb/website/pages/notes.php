@@ -4,7 +4,7 @@ include_once '../utils/jwt.php';
 include_once '../utils/username.php';
 include_once '../utils/connection.php';
 
-$show_toast_addes = false;
+$show_toast_added = false;
 if(isset($username)){
     connect();
     $notes = get_notes($username);
@@ -18,7 +18,7 @@ if(isset($username)){
 
         if(!empty($label)){
             add_note($username, $label, $text);
-            $show_toast_addes = true;
+            $show_toast_added = true;
             exit;
         }
     }
@@ -97,8 +97,35 @@ include_once '../static/navbar.php';
     </div>
 </div>
 
+
+<!-- Hidden Toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <!--
+            <img src="..." class="rounded me-2" alt="...">
+            -->
+            <strong class="me-auto">Notes</strong>
+            <small>now</small>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Note with title '<?= htmlspecialchars($_POST['label'])?>' added successfully!
+        </div>
+    </div>
+</div>
+
 <?php
 include_once '../static/footer.php';
+if ($show_toast_added){ ?>
+    <script>
+        // Show toast
+        const toastLiveExample = document.getElementById('liveToast')
+        const toast = new bootstrap.Toast(toastLiveExample)
+        toast.show()
+
+    </script>
+<?php }
 ?>
 </body>
 </html>
