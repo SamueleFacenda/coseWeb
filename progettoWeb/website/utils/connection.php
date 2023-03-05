@@ -62,16 +62,19 @@ function add_user($username, $password, $email): void
 function add_note($email, $label, $comment=NULL): void
 {
     global $conn;
+    $stmt = $conn->prepare("INSERT INTO notes (label, user_id) SELECT ?, id FROM users WHERE email = ?;");
+    $stmt->bind_param("ss", $label, $email);
     if($comment == NULL){
-        $stmt = $conn->prepare("INSERT INTO notes (label, user_id) SELECT ?, id FROM users WHERE email = ?;");
-        $stmt->bind_param("ss", $label, $email);
+        $stmt->execute();
+        $stmt->close();
     }else{
-        $stmt = $conn->prepare("INSERT INTO notes (label, user_id) SELECT ?, id FROM users WHERE email = ?;".
-                                "INSERT INTO comments (note_id, text) VALUES (LAST_INSERT_ID(), ?);");
-        $stmt->bind_param("sss", $label, $email, $comment);
+        $stmt2 = $conn->prepare("INSERT INTO comments (note_id, text) VALUES (LAST_INSERT_ID(), ?);");
+        $stmt2->bind_param("s", $comment);
+        $stmt->execute();
+        $stmt2->execute();
+        $stmt->close();
+        $stmt2->close();
     }
-    $stmt->execute();
-    $stmt->close();
 }
 
 function get_notes($email, $limit=18446744073709551615, $offset=0): ?array

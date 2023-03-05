@@ -5,9 +5,8 @@ include_once '../utils/username.php';
 include_once '../utils/connection.php';
 
 $show_toast_added = false;
-if(isset($username)){
+if(isset($email)){
     connect();
-    $notes = get_notes($username);
 
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $label = $_POST['label'];
@@ -17,11 +16,12 @@ if(isset($username)){
         }
 
         if(!empty($label)){
-            add_note($username, $label, $text);
+            add_note($email, $label, $text);
             $show_toast_added = true;
-            exit;
         }
     }
+
+    $notes = get_notes($email);
 }
 
 ?>
