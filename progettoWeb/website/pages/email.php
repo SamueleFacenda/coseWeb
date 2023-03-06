@@ -45,7 +45,6 @@ if(isset($_GET['sendemail'])){
     //$headers .= "MIME-Version: 1.0" . "\r\n";
     //$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
     $res = mail($email, $subject, $message, $headers);
-    var_dump($res);
     $sent = true;
 }
 
