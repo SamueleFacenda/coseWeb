@@ -58,9 +58,9 @@ include_once '../static/navbar.php';
                     <div class="col col-sm-6 mb-3 h-100">
                         <div class="card h-100">
                             <div class="card-body">
-                                <h5 class="card-title"><?=$note['label']?> </h5>
+                                <h5 class="card-title"><?=htmlspecialchars($note['label'])?> </h5>
                                 <h6 class="card-subtitle mb-2 text-muted"><?=$note['date']?></h6>
-                                <p class="card-text"><?=$note['text']?></p>
+                                <p class="card-text"><?=htmlspecialchars($note['text'])?></p>
                                 <!--
                                 <a href="#" class="card-link">Card link</a>
                                 -->
