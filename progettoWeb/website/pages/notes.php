@@ -30,7 +30,7 @@ if(isset($email)){
 <?php
 // import head
 include_once '../static/head.php';
-echo '<body>';
+echo '<body class="d-flex flex-column min-vh-100">';
 include_once '../static/navbar.php';
 ?>
 <section class="text-center">

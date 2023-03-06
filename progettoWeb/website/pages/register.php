@@ -55,10 +55,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php
     require_once '../static/head.php';
     include_once '../utils/username.php';
-    echo '<body>';
+    echo '<body class="d-flex flex-column min-vh-100">';
     require_once '../static/navbar.php';
 ?>
-    <section class=" py-5" style="background-color: #eee;">
+    <section class="py-5" style="background-color: #eee;">
         <div class="container h-auto">
             <div class="row d-flex justify-content-center align-items-center h-auto">
                 <div class="col-lg-12 col-xl-11">

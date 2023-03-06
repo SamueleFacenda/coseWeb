@@ -54,13 +54,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <?php
     require_once '../static/head.php';
-    echo '<body>';
+    echo '<body class="d-flex flex-column min-vh-100">';
     include_once '../utils/username.php';
     require_once '../static/navbar.php';
 ?>
 
-<section class="vh-90" style="background-color: #eee;">
-    <div class="container h-100">
+<section class="py-5" style="background-color: #eee;">
+    <div class="container h-auto">
         <div class="row d-flex justify-content-center align-items-center h-100">
             <div class="col-md-10 col-lg-8 col-xl-6">
                 <div class="card text-black" style="border-radius: 25px;">
