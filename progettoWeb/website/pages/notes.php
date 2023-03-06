@@ -34,7 +34,7 @@ echo '<body>';
 include_once '../static/navbar.php';
 ?>
 <section class="text-center">
-    <h1>Notes</h1>
+    <h1 class="display-4">Notes</h1>
     <?php if(!isset($username)): ?>
         <p>Log in to see your notes</p>
     <?php else:

@@ -9,7 +9,7 @@ include_once '../utils/username.php';
 include_once '../static/navbar.php';
 ?>
 <section class="text-center">
-    <h1>shared</h1>
+    <h1 class="display-4">Shared</h1>
 </section>
 <?php
 include_once '../static/footer.php';
