@@ -58,9 +58,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo '<body>';
     require_once '../static/navbar.php';
 ?>
-    <section class="vh-100 pt-5" style="background-color: #eee;">
-        <div class="container h-100">
-            <div class="row d-flex justify-content-center align-items-center h-100">
+    <section class=" py-5" style="background-color: #eee;">
+        <div class="container h-auto">
+            <div class="row d-flex justify-content-center align-items-center h-auto">
                 <div class="col-lg-12 col-xl-11">
                     <div class="card text-black" style="border-radius: 25px;">
                         <div class="card-body p-md-5">
