@@ -20,8 +20,12 @@
                     you have done!
                 </p>
                 <p>
-                    <a href="/pages/register.php" class="btn btn-primary my-2">Sign up!</a>
-                    <a href="/pages/login.php" class="btn btn-secondary my-2">Sign in</a>
+                    <?php if(isset($username)): ?>
+                        <a href="/pages/notes.php" class="btn btn-primary my-2">Go to notes</a>
+                    <?php else: ?>
+                        <a href="/pages/register.php" class="btn btn-primary my-2">Sign up!</a>
+                        <a href="/pages/login.php" class="btn btn-secondary my-2">Sign in</a>
+                    <?php endif; ?>
                 </p>
             </div>
         </section>
@@ -38,7 +42,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
-                Hello <?= /** @noinspection PhpUndefinedVariableInspection */$username ?>!,
+                Hello <?= /** @noinspection PhpUndefinedVariableInspection */$username ?>!
                 <!-- XSS Ocio -->
                 User <?= htmlspecialchars($_GET['toast'])?> successfully!
             </div>

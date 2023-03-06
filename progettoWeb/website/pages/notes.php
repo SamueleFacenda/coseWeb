@@ -21,6 +21,11 @@ if(isset($email)){
         }
     }
 
+    if(isset($_GET['query'])){
+        $query = $_GET['query'];
+    }
+    // TODO search
+
     $notes = get_notes($email);
 }
 
@@ -34,8 +39,26 @@ echo '<body class="d-flex flex-column min-vh-100">';
 include_once '../static/navbar.php';
 ?>
 <section class="text-center">
-    <h1 class="display-4">Notes</h1>
-    <?php if(!isset($username)): ?>
+    <div class="row align-items-center justify-content-center">
+        <div class="col-sm-2 offset-sm-5">
+            <h1 class="display-4 w-auto">Notes</h1>
+        </div>
+        <div class="col-sm-4 offset-sm-1 text-center">
+            <div class="mx-sm-2 px-4 px-sm-0">
+                <!-- research -->
+                <form class="d-flex" role="search" method="get" action="notes.php">
+                    <input class="form-control me-2 w-75" type="search" placeholder="Search" aria-label="Search" name="query">
+                    <button class="btn btn-outline-success w-25" type="submit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+    <?php if(!isset($email)): ?>
         <p>Log in to see your notes</p>
     <?php else:
         if($notes == null){
@@ -52,15 +75,21 @@ include_once '../static/navbar.php';
         </button>
 
         <!-- Notes -->
-        <div class="container text-center">
+        <div class="container mt-3">
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
                 <?php foreach($notes as $note): ?>
-                    <div class="col col-sm-6 mb-3 h-100">
+                    <div class="col col-sm-6 mb-3">
                         <div class="card h-100">
                             <div class="card-body">
-                                <h5 class="card-title"><?=htmlspecialchars($note['label'])?> </h5>
-                                <h6 class="card-subtitle mb-2 text-muted"><?=$note['date']?></h6>
-                                <p class="card-text"><?=htmlspecialchars($note['text'])?></p>
+                                <h5 class="card-title">
+                                    <?=htmlspecialchars($note['label'])?>
+                                </h5>
+                                <h6 class="card-subtitle mb-2 text-muted">
+                                    <?=$note['date']?>
+                                </h6>
+                                <p class="card-text">
+                                    <?=nl2br(htmlspecialchars($note['text']))?>
+                                </p>
                                 <!--
                                 <a href="#" class="card-link">Card link</a>
                                 -->
@@ -72,6 +101,7 @@ include_once '../static/navbar.php';
         </div>
     <?php endif; ?>
 </section>
+
 <!-- Modal -->
 <div class="modal fade" id="staticBackdrop"  data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
