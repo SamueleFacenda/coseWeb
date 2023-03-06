@@ -69,13 +69,16 @@ include_once '../static/navbar.php';
         <p class="lead">The token is invalid or has expired</p>
     <?php elseif($to_verify): ?>
         <h1 class="display-4">Pending verification</h1>
-        <p class="lead">You should have recived a verification email.</p>
+        <p class="lead">You should have received a verification email.</p>
         <p class="lead">If not, or the verification code has expired(1d), click <a href="email.php?sendemail=<?=$email?>">here</a> to resend the email</p>
     <?php elseif($sent): ?>
         <h1 class="display-4">Email sent</h1>
         <p class="lead">Check you email and also the spam folder</p>
         <p class="lead">If you cannot find it, or the verification code has expired(1d), click <a href="email.php?sendemail=<?=$email?>">here</a> to resend the email</p>
         <p class="lead">Email sent to <?=$email?></p>
+    <?php else: ?>
+        <h1 class="display-4">Go to login</h1>
+        <p class="lead">Try to login in order to verify your email</p>
     <?php endif; ?>
 </section>
 <?php
