@@ -1,5 +1,6 @@
 <?php
 include_once '../utils/jwt.php';
+include_once '../utils/connection.php';
 $secret = getenv('JWT_SECRET');
 if(empty($secret)){
     $secret = 'segretissimo!!';
@@ -12,7 +13,7 @@ $sent = false;
 
 
 if(isset($_GET['verify'])){
-    $jwt = $_GET['jwt'];
+    $jwt = $_GET['verify'];
     if(!verifyJwt($jwt, $secret)){
         $invalid_jwt = true;
     }else{
@@ -21,7 +22,7 @@ if(isset($_GET['verify'])){
         $verify = $payload->verify;
         if($verify === 'verify' && time() - $payload->time < 3600*24){
             connect();
-            verify_email($email);
+            set_email_verified($email);
             $verified = true;
         }else{
             $invalid_jwt = true;
@@ -37,13 +38,14 @@ if(isset($_GET['email'])){
 if(isset($_GET['sendemail'])){
     $email = $_GET['sendemail'];
     $jwt = createJwt((object) ['email' => $email, 'verify' => 'verify', 'time' => time()], $secret);
-    $url = 'http://facenda5inc2022/pages/email.php?verify=true&jwt=' . urlencode($jwt);
+    $url = 'http://facenda5inc2022.altervista.org/pages/email.php?verify=' . urlencode($jwt);
     $subject = 'Verify your email';
     $message = 'Click on the link to verify your email: ' . $url;
-    $headers = "MIME-Version: 1.0" . "\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= 'From: Samuele Facenda <facenda5inc2022@altervista.org>' . "\r\n";
-    mail($email, $subject, $message, $headers);
+    $headers = 'From: "Samuele Facenda" <facenda5inc2022@altervista.org>' . "\r\n";
+    //$headers .= "MIME-Version: 1.0" . "\r\n";
+    //$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+    $res = mail($email, $subject, $message, $headers);
+    var_dump($res);
     $sent = true;
 }
 
@@ -62,7 +64,7 @@ include_once '../static/navbar.php';
 <section class="text-center">
     <?php if($verified): ?>
         <h1 class="display-4">Email verified</h1>
-        <p class="lead">You can now login</p>
+        <p class="lead">You can now <a href="register.php">login</a> </p>
     <?php elseif($invalid_jwt): ?>
         <h1 class="display-4">Invalid token</h1>
         <p class="lead">The token is invalid or has expired</p>

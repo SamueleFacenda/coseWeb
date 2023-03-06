@@ -142,7 +142,7 @@ function get_users(): array
 function set_email_verified($email): void
 {
     global $conn;
-    $stmt = $conn->prepare("UPDATE users SET email_verified = 1 WHERE email = ?;");
+    $stmt = $conn->prepare("UPDATE users SET is_email_verified = 1 WHERE email = ?;");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->close();
