@@ -67,7 +67,6 @@ include_once '../static/navbar.php';
                             </div>
                         </div>
                     </div>
-
                 <?php endforeach; ?>
             </div>
         </div>

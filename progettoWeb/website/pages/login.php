@@ -32,6 +32,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // wrong password
                 $wrong_credentials = true;
             }else{
+                if(!$user['is_email_verified']){
+                    // redirect to email verification page
+                    header('location: /pages/email.php?email=' . urlencode($email));
+                    exit;
+                }
+
                 // create jwt
                 $jwt = createJwt((object) ['username' => $user['username'], 'email' => $user['email'], 'admin' => $user['is_admin'] ? 1:0], $secret);
                 // set jwt cookie for one month

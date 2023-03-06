@@ -34,12 +34,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }else{
             add_user($username, $password, $email);
 
+            /* the email has to be verified before the user can login
             // create jwt
             $jwt = createJwt((object) ['username' => $username, 'email' => $email, 'admin' => 0], $secret);
             // set jwt cookie for one month
             setcookie('jwt', $jwt, time() + 3600 * 24 * 30 , '/', httponly: true);
             // redirect to home
             header('location: /index.php?toast=registered');
+            exit;
+            */
+            header ('location: /pages/email.php?sendemail=' . urlencode($email));
             exit;
         }
     }

@@ -128,3 +128,22 @@ function delete_comment($comment_id): void
     $stmt->execute();
     $stmt->close();
 }
+
+function get_users(): array
+{
+    global $conn;
+    $stmt = $conn->prepare("SELECT * FROM users;");
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+function set_email_verified($email): void
+{
+    global $conn;
+    $stmt = $conn->prepare("UPDATE users SET email_verified = 1 WHERE email = ?;");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->close();
+}
