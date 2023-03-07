@@ -194,3 +194,14 @@ function set_email_verified($email): void
     $stmt->execute();
     $stmt->close();
 }
+
+function search_users($query){
+    global $conn;
+    $query = "%".$query."%";
+    $stmt = $conn->prepare("SELECT id, email, username FROM users WHERE username LIKE ? OR email LIKE ?;");
+    $stmt->bind_param("ss", $query, $query);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $stmt->close();
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
