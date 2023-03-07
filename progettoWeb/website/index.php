@@ -21,7 +21,7 @@
                 </p>
                 <p>
                     <?php if(isset($username)): ?>
-                        <a href="/pages/notes.php" class="btn btn-primary my-2">Go to notes</a>
+                        <a href="/pages/notes.php" class="btn btn-primary my-2">Go to your notes!</a>
                     <?php else: ?>
                         <a href="/pages/register.php" class="btn btn-primary my-2">Sign up!</a>
                         <a href="/pages/login.php" class="btn btn-secondary my-2">Sign in</a>

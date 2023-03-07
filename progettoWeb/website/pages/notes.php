@@ -41,7 +41,7 @@ if(isset($email)){
 
     if(isset($_GET['query'])){
         $query = $_GET['query'];
-        $notes = get_notes_containing($email, query: $query);
+        $notes = get_notes_containing($email, $query);
     }else{
         $notes = get_notes($email);
     }
@@ -167,7 +167,7 @@ include_once '../static/navbar.php';
                     </div>
                     <div class="mb-3">
                         <label for="textEdit" class="form-label">Text</label>
-                        <textarea class="form-control" id="textEdit" name="text" rows="3"></textarea>
+                        <textarea class="form-control animated" id="textEdit" name="text" rows="1" onfocus="updateTextArea()" onkeyup="updateTextArea()" style="overflow:hidden"></textarea>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -217,13 +217,20 @@ if (isset($toast_text)){ ?>
         text = text.trim().replace(/<br>/g, '');
         label = label.trim();
 
+        let area = document.getElementById('textEdit');
+
         document.getElementById('labelEdit').value = label;
-        document.getElementById('textEdit').value = text;
         document.getElementById('edit_note_id').value = id;
-
-
+        area.value = text;
         let myModal = new bootstrap.Modal(document.getElementById('editModal'), {});
         myModal.show();
+        // count new lines
+    }
+
+    function updateTextArea(){
+        let area = document.getElementById('textEdit');
+        area.style.height = 'auto';
+        area.style.height = (area.scrollHeight + 12) + 'px';
     }
 </script>
 </body>

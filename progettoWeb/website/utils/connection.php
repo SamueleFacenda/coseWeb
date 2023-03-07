@@ -1,6 +1,6 @@
 <?php
 
-function connect()
+function connect(): void
 {
     $servername = "127.0.0.1";
     $username = "facenda5inc2022";
@@ -24,7 +24,8 @@ function email_exists($email): bool
     return $result->num_rows > 0;
 }
 
-function username_exists($username){
+function username_exists($username): bool
+{
     global $conn;
     $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);
@@ -96,7 +97,7 @@ function get_notes($email, $limit=100, $offset=0): ?array
     }
 }
 
-function get_notes_containing($email, $limit=100, $offset=0, $query): ?array
+function get_notes_containing($email, $query, $limit=100, $offset=0): ?array
 {
     global $conn;
     $query = "%".$query."%";
