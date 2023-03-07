@@ -214,7 +214,7 @@ if (isset($toast_text)){ ?>
         let text = document.getElementById(id).getElementsByTagName('p')[0].innerHTML;
         let label = document.getElementById(id).getElementsByTagName('h5')[0].innerHTML;
         // replace <br> with new line
-        text = text.replace(/<br>/g, '\n').trim();
+        text = text.trim().replace(/<br>/g, '');
         label = label.trim();
 
         document.getElementById('labelEdit').value = label;
