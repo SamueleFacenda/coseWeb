@@ -4,29 +4,47 @@ include_once '../utils/jwt.php';
 include_once '../utils/username.php';
 include_once '../utils/connection.php';
 
-$show_toast_added = false;
 if(isset($email)){
     connect();
 
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
         $label = $_POST['label'];
         $text = $_POST['text'];
+        $action = $_POST['action'];
         if(empty($text)){
             $text = null;
         }
 
-        if(!empty($label)){
-            add_note($email, $label, $text);
-            $show_toast_added = true;
+        if(!empty($label) && !empty($action)){
+            switch($action){
+                case 'create':
+                    add_note($email, $label, $text);
+                    $toast_text = 'Note with title'.htmlspecialchars($label).' added successfully!';
+                    break;
+                case 'edit':
+                    $id = $_POST['note_id'];
+                    edit_note($email, $id, $label, $text);
+                    $toast_text = 'Note with title'.htmlspecialchars($label).' edited successfully!';
+                    break;
+                case 'delete':
+                    $id = $_POST['note_id'];
+                    delete_note($email, $id);
+                    $toast_text = 'Note with title'.htmlspecialchars($label).' deleted successfully!';
+                    break;
+            }
         }
     }
 
     if(isset($_GET['query'])){
         $query = $_GET['query'];
     }
-    // TODO search
 
-    $notes = get_notes($email);
+    if(isset($_GET['query'])){
+        $query = $_GET['query'];
+        $notes = get_notes_containing($email, query: $query);
+    }else{
+        $notes = get_notes($email);
+    }
 }
 
 ?>
@@ -47,7 +65,8 @@ include_once '../static/navbar.php';
             <div class="mx-sm-2 px-4 px-sm-0">
                 <!-- research -->
                 <form class="d-flex" role="search" method="get" action="notes.php">
-                    <input class="form-control me-2 w-75" type="search" placeholder="Search" aria-label="Search" name="query">
+                    <input class="form-control me-2 w-75" type="search" placeholder="Search" aria-label="Search" name="query"
+                    value="<?=$query?>">
                     <button class="btn btn-outline-success w-25" type="submit">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
@@ -61,8 +80,11 @@ include_once '../static/navbar.php';
     <?php if(!isset($email)): ?>
         <p>Log in to see your notes</p>
     <?php else:
-        if($notes == null){
+        if($notes == null && empty($query)){
             echo "<p>You don't have any notes, click on 'add note' to create one!</p>";
+        }
+        if($notes == null && !empty($query)){
+            echo "<p>No search result!</p>";
         }
         ?>
 
@@ -76,11 +98,11 @@ include_once '../static/navbar.php';
 
         <!-- Notes -->
         <div class="container mt-3">
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
+            <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4">
                 <?php foreach($notes as $note): ?>
-                    <div class="col col-sm-6 mb-3">
-                        <div class="card h-100">
-                            <div class="card-body">
+                    <div class="col">
+                        <div class="card h-100" onclick="editModal(<?=$note['note_id']?>)">
+                            <div class="card-body" id="<?=$note['note_id']?>">
                                 <h5 class="card-title">
                                     <?=htmlspecialchars($note['label'])?>
                                 </h5>
@@ -102,7 +124,7 @@ include_once '../static/navbar.php';
     <?php endif; ?>
 </section>
 
-<!-- Modal -->
+<!-- Modal Add -->
 <div class="modal fade" id="staticBackdrop"  data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -122,12 +144,43 @@ include_once '../static/navbar.php';
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" name="action" value="create" class="btn btn-primary">Save</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="editModal"  data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit note</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="notes.php" method="post">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="labelEdit" class="form-label">Label</label>
+                        <input type="text" class="form-control" id="labelEdit" name="label" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="textEdit" class="form-label">Text</label>
+                        <textarea class="form-control" id="textEdit" name="text" rows="3"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" name="action" class="btn btn-danger me-auto" value="delete">Delete</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" name="action" class="btn btn-primary" value="edit">Save</button>
+                </div>
+                <input type="hidden" name="note_id" id="edit_note_id">
+            </form>
+        </div>
+    </div>
+</div>
+
 
 
 <!-- Toast -->
@@ -140,22 +193,38 @@ include_once '../static/navbar.php';
             <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body">
-            Note with title '<?= htmlspecialchars($_POST['label'])?>' added successfully!
+            <?=$toast_text?>
         </div>
     </div>
 </div>
 
 <?php
 include_once '../static/footer.php';
-if ($show_toast_added){ ?>
+if (isset($toast_text)){ ?>
     <script>
         // Show toast
         const toastLiveExample = document.getElementById('liveToast')
         const toast = new bootstrap.Toast(toastLiveExample)
         toast.show()
-
     </script>
 <?php }
 ?>
+<script>
+    function editModal(id){
+        let text = document.getElementById(id).getElementsByTagName('p')[0].innerHTML;
+        let label = document.getElementById(id).getElementsByTagName('h5')[0].innerHTML;
+        // replace <br> with new line
+        text = text.replace(/<br>/g, '\n').trim();
+        label = label.trim();
+
+        document.getElementById('labelEdit').value = label;
+        document.getElementById('textEdit').value = text;
+        document.getElementById('edit_note_id').value = id;
+
+
+        let myModal = new bootstrap.Modal(document.getElementById('editModal'), {});
+        myModal.show();
+    }
+</script>
 </body>
 </html>
