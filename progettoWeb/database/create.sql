@@ -144,11 +144,14 @@ END$$
 DROP PROCEDURE IF EXISTS search_user;
 DELIMITER $$
 CREATE PROCEDURE search_user(
-    IN query VARCHAR(50)
+    IN query VARCHAR(50),
+    IN lim INT,
+    IN offs INT
 )
 BEGIN
     SELECT * FROM users
-    WHERE LOWER(username) LIKE LOWER(CONCAT('%', query, '%')) OR LOWER(email) LIKE LOWER(CONCAT('%', query, '%'));
+    WHERE LOWER(username) LIKE LOWER(CONCAT('%', query, '%')) OR LOWER(email) LIKE LOWER(CONCAT('%', query, '%'))
+    LIMIT offs, lim;
 END$$
 
 -- ricerca di una nota, data una query, controlla se esiste una nota con label che contengano la query, data anche l'email dell'utente
@@ -156,14 +159,17 @@ DROP PROCEDURE IF EXISTS search_note;
 DELIMITER $$
 CREATE PROCEDURE search_note(
     IN in_email VARCHAR(50),
-    IN query VARCHAR(50)
+    IN query VARCHAR(50),
+    IN lim INT,
+    IN offs INT
 )
 BEGIN
     SELECT * FROM notes
     LEFT JOIN comments c on notes.id = c.note_id
     WHERE (LOWER(label) LIKE LOWER(CONCAT('%', query, '%')) OR
               LOWER(text) LIKE LOWER(CONCAT('%', query, '%')))
-      AND user_id = (SELECT id FROM users WHERE in_email = email);
+      AND user_id = (SELECT id FROM users WHERE in_email = email)
+    LIMIT offs, lim;
 END$$
 
 -- inserisce una nuova condivisione, data l'email dell'utente, l'id della nota e l'email dell'utente con cui condividere la nota
