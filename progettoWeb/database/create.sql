@@ -37,7 +37,9 @@ CREATE TABLE comments (
     text VARCHAR(500) NOT NULL,
     edit_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (note_id),
-    FOREIGN KEY (note_id) REFERENCES notes(id)
+    FOREIGN KEY (note_id)
+        REFERENCES notes(id)
+        ON DELETE CASCADE
 );
 
 -- creazione della tabella shared
@@ -46,6 +48,156 @@ CREATE TABLE shared (
     note_id INT NOT NULL,
     user_id INT NOT NULL,
     PRIMARY KEY (note_id, user_id),
-    FOREIGN KEY (note_id) REFERENCES notes(id),
+    FOREIGN KEY (note_id)
+        REFERENCES notes(id)
+        ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+-- stored procedures:
+
+-- inserimento di un nuovo utente
+DROP PROCEDURE IF EXISTS insert_user;
+DELIMITER $$
+CREATE PROCEDURE insert_user(
+    IN username VARCHAR(50),
+    IN password BINARY(60),
+    IN email VARCHAR(50)
+)
+BEGIN
+    INSERT INTO users (username, password, email)
+    VALUES (username, password, email);
+END$$
+DELIMITER ;
+
+-- inserimento di una nuova nota, data l'email dell'utente
+DROP PROCEDURE IF EXISTS insert_note;
+DELIMITER $$
+CREATE PROCEDURE insert_note(
+    IN in_email VARCHAR(50),
+    IN label VARCHAR(50)
+)
+BEGIN
+    INSERT INTO notes (label, user_id)
+    VALUES (label, (SELECT id FROM users WHERE in_email = email));
+END$$
+
+-- inserimento di una nuova nota con commento, se esiste, data l'email dell'utente
+DROP PROCEDURE IF EXISTS insert_note_with_comment;
+DELIMITER $$
+CREATE PROCEDURE insert_note_with_comment(
+    IN in_email VARCHAR(50),
+    IN in_label VARCHAR(50),
+    IN comment VARCHAR(500)
+)
+BEGIN
+    INSERT INTO notes (label, user_id)
+    VALUES (label, (SELECT id FROM users WHERE in_email = email));
+    IF comment IS NOT NULL AND comment != '' THEN
+        INSERT INTO comments (note_id, text)
+        VALUES (LAST_INSERT_ID(), comment);
+    END IF;
+END$$
+
+-- aggiornamento di una nota, data l'email dell'utente, il nuovo label e l'id della nota
+DROP PROCEDURE IF EXISTS update_note_label;
+DELIMITER $$
+CREATE PROCEDURE update_note_label(
+    IN in_email VARCHAR(50),
+    IN in_label VARCHAR(50),
+    IN note_id INT
+)
+BEGIN
+    UPDATE notes
+    SET label = in_label
+    WHERE id = note_id AND user_id = (SELECT id FROM users WHERE in_email = email);
+END$$
+
+-- aggiornamento di una nota, data l'email dell'utente, il nuovo commento e l'id della nota
+DROP PROCEDURE IF EXISTS update_note_comment;
+DELIMITER $$
+CREATE PROCEDURE update_note_comment(
+    IN in_email VARCHAR(50),
+    IN comment VARCHAR(500),
+    IN in_note_id INT
+)
+BEGIN
+    UPDATE comments
+    SET text = comment
+    WHERE in_note_id = note_id AND
+          note_id IN (SELECT id FROM notes WHERE user_id = (SELECT id FROM users WHERE in_email = email));
+END$$
+
+-- eliminazione di una nota, data l'email dell'utente e l'id della nota
+DROP PROCEDURE IF EXISTS delete_note;
+DELIMITER $$
+CREATE PROCEDURE delete_note(
+    IN in_email VARCHAR(50),
+    IN note_id INT
+)
+BEGIN
+    DELETE FROM notes
+    WHERE id = note_id AND user_id = (SELECT id FROM users WHERE in_email = email);
+END$$
+
+-- ricerca di un utente, data una query, controlla se esiste un utente con username o email che contengano la query
+DROP PROCEDURE IF EXISTS search_user;
+DELIMITER $$
+CREATE PROCEDURE search_user(
+    IN query VARCHAR(50)
+)
+BEGIN
+    SELECT * FROM users
+    WHERE LOWER(username) LIKE LOWER(CONCAT('%', query, '%')) OR LOWER(email) LIKE LOWER(CONCAT('%', query, '%'));
+END$$
+
+-- ricerca di una nota, data una query, controlla se esiste una nota con label che contengano la query, data anche l'email dell'utente
+DROP PROCEDURE IF EXISTS search_note;
+DELIMITER $$
+CREATE PROCEDURE search_note(
+    IN in_email VARCHAR(50),
+    IN query VARCHAR(50)
+)
+BEGIN
+    SELECT * FROM notes
+    LEFT JOIN comments c on notes.id = c.note_id
+    WHERE (LOWER(label) LIKE LOWER(CONCAT('%', query, '%')) OR
+              LOWER(text) LIKE LOWER(CONCAT('%', query, '%')))
+      AND user_id = (SELECT id FROM users WHERE in_email = email);
+END$$
+
+-- inserisce una nuova condivisione, data l'email dell'utente, l'id della nota e l'email dell'utente con cui condividere la nota
+DROP PROCEDURE IF EXISTS insert_shared;
+DELIMITER $$
+CREATE PROCEDURE insert_shared(
+    IN in_email VARCHAR(50),
+    IN note_id INT,
+    IN shared_email VARCHAR(50)
+)
+BEGIN
+    -- controlla se è il proprietario della nota
+    IF (SELECT id FROM users WHERE in_email = email) != (SELECT user_id FROM notes WHERE id = note_id) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Non sei il proprietario della nota';
+    END IF;
+    INSERT INTO shared (note_id, user_id)
+    VALUES (note_id, (SELECT id FROM users WHERE in_email = shared_email));
+END$$
+
+-- prende tutte le note condivise con l'utente, data l'email dell'utente, e le note che lui ha condiviso
+DROP PROCEDURE IF EXISTS get_shared;
+DELIMITER $$
+CREATE PROCEDURE get_shared(
+    IN in_email VARCHAR(50)
+)
+BEGIN
+    SELECT * FROM notes
+    LEFT JOIN comments AS c on notes.id = c.note_id
+    RIGHT JOIN shared AS s on notes.id = s.note_id
+    WHERE s.user_id = (SELECT id FROM users WHERE in_email = email)
+    UNION
+    SELECT * FROM notes
+    LEFT JOIN comments AS c on notes.id = c.note_id
+    RIGHT JOIN shared AS s on notes.id = s.note_id
+    WHERE notes.user_id = (SELECT id FROM users WHERE in_email = email);
+END$$
