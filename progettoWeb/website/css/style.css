@@ -5,7 +5,7 @@ body {
 }
 
 .animated {
-    -webkit-transition: height 0.2s;
-    -moz-transition: height 0.2s;
-    transition: height 0.2s;
+    -webkit-transition: height 1s ease;
+    -moz-transition: height 1s ease;
+    transition: height 1s ease;
 }

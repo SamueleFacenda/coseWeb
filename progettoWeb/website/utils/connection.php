@@ -206,3 +206,7 @@ function search_users($query){
     $stmt->close();
     return $result->fetch_all(MYSQLI_ASSOC);
 }
+
+function share($note, $email){
+
+}

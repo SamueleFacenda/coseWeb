@@ -40,11 +40,16 @@ if(isset($_GET['sendemail'])){
     $jwt = createJwt((object) ['email' => $email, 'verify' => 'verify', 'time' => time()], $secret);
     $url = 'http://facenda5inc2022.altervista.org/pages/email.php?verify=' . urlencode($jwt);
     $subject = 'Verify your email';
-    $message = 'Click on the link to verify your email: ' . $url;
-    $headers = 'From: "Samuele Facenda" <facenda5inc2022@altervista.org>' . "\r\n";
-    //$headers .= "MIME-Version: 1.0" . "\r\n";
-    //$headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $res = mail($email, $subject, $message, $headers);
+    $message = '<html><body>';
+    $message .= '<head><title>Confirm your address</title></head>';
+    $message .= '<h1>Verify your email</h1>';
+    $message .= '<p>Click on the link to verify your email: <a href="' . $url . '">facenda5inc2022</a></p>';
+    $message .= '</body></html>';
+    $headers = "MIME-Version: 1.0" . "\r\n";
+    $headers .= "Content-type:text/html; charset=UTF-8" . "\r\n";
+    //$headers .= 'Cc: samuele.facenda@buonarroti.tn.it' . "\r\n";
+   // $headers .= 'From: "Samuele Facenda" <facenda5inc2022@altervista.org>' . "\r\n";
+    $res = mail($email, $subject,'ciao');
     $sent = true;
 }
 
@@ -63,7 +68,7 @@ include_once '../static/navbar.php';
 <section class="text-center">
     <?php if($verified): ?>
         <h1 class="display-4">Email verified</h1>
-        <p class="lead">You can now <a href="register.php">login</a> </p>
+        <p class="lead">You can now <a href="login.php">login</a> </p>
     <?php elseif($invalid_jwt): ?>
         <h1 class="display-4">Invalid token</h1>
         <p class="lead">The token is invalid or has expired</p>

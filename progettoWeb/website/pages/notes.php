@@ -68,6 +68,7 @@ include_once '../static/navbar.php';
                     <input class="form-control me-2 w-75" type="search" placeholder="Search" aria-label="Search" name="query"
                     value="<?=$query?>">
                     <button class="btn btn-outline-success w-25" type="submit">
+                        <!-- search icon -->
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
                             <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
                         </svg>
@@ -91,6 +92,7 @@ include_once '../static/navbar.php';
         <!-- Button trigger modal -->
         <button class="z-3 btn btn-primary position-fixed bottom-0 end-0 m-md-5 m-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                <!-- + icon -->
                 <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
             </svg>
             Add note
@@ -172,10 +174,47 @@ include_once '../static/navbar.php';
                 </div>
                 <div class="modal-footer">
                     <button type="submit" name="action" class="btn btn-danger me-auto" value="delete">Delete</button>
+                    <button type="button" class="btn btn-success" data-bs-target="#modalToggleShare" data-bs-toggle="modal">Share</button>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" name="action" class="btn btn-primary" value="edit">Save</button>
                 </div>
-                <input type="hidden" name="note_id" id="edit_note_id">
+                <input type="hidden" name="note_id">
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Share Modal -->
+<div class="modal fade" id="modalToggleShare" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="staticBackdropLabel">Share note</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form action="shared.php" method="post" autocomplete="off">
+                <div class="modal-body">
+                    <div class="position-relative">
+                        <div class="input-group mb-3">
+                            <input id="search" name="query" class="form-control d-inline-block" type="search" placeholder="Search user" aria-label="Search" onkeyup="updateSearch()">
+                            <button class="btn btn-outline-success" type="submit">
+                                <!-- share icon -->
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
+                                    <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="list-group position-absolute top-100 start-0 end-0 m-0" id="searchList">
+                            <!-- suggestion items -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+                <input type="hidden" name="note_id">
             </form>
         </div>
     </div>
@@ -209,29 +248,6 @@ if (isset($toast_text)){ ?>
     </script>
 <?php }
 ?>
-<script>
-    function editModal(id){
-        let text = document.getElementById(id).getElementsByTagName('p')[0].innerHTML;
-        let label = document.getElementById(id).getElementsByTagName('h5')[0].innerHTML;
-        // replace <br> with new line
-        text = text.trim().replace(/<br>/g, '');
-        label = label.trim();
-
-        let area = document.getElementById('textEdit');
-
-        document.getElementById('labelEdit').value = label;
-        document.getElementById('edit_note_id').value = id;
-        area.value = text;
-        let myModal = new bootstrap.Modal(document.getElementById('editModal'), {});
-        myModal.show();
-        // count new lines
-    }
-
-    function updateTextArea(){
-        let area = document.getElementById('textEdit');
-        area.style.height = 'auto';
-        area.style.height = (area.scrollHeight + 12) + 'px';
-    }
-</script>
+<script src="../js/notes.js"></script>
 </body>
 </html>
