@@ -47,9 +47,8 @@ if(isset($_GET['sendemail'])){
     $message .= '</body></html>';
     $headers = "MIME-Version: 1.0" . "\r\n";
     $headers .= "Content-type:text/html; charset=UTF-8" . "\r\n";
-    //$headers .= 'Cc: samuele.facenda@buonarroti.tn.it' . "\r\n";
-   // $headers .= 'From: "Samuele Facenda" <facenda5inc2022@altervista.org>' . "\r\n";
-    $res = mail($email, $subject,'ciao');
+    $headers .= 'From: "Samuele Facenda" <facenda5inc2022@altervista.org>' . "\r\n";
+    $res = mail($email, $subject,$message, $headers);
     $sent = true;
 }
 
