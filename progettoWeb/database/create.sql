@@ -81,6 +81,7 @@ BEGIN
     INSERT INTO notes (label, user_id)
     VALUES (label, (SELECT id FROM users WHERE in_email = email));
 END$$
+DELIMITER ;
 
 -- inserimento di una nuova nota con commento, se esiste, data l'email dell'utente
 DROP PROCEDURE IF EXISTS insert_note_with_comment;
@@ -98,6 +99,7 @@ BEGIN
         VALUES (LAST_INSERT_ID(), comment);
     END IF;
 END$$
+DELIMITER ;
 
 -- aggiornamento di una nota, data l'email dell'utente, il nuovo label e l'id della nota
 DROP PROCEDURE IF EXISTS update_note_label;
@@ -112,6 +114,7 @@ BEGIN
     SET label = in_label
     WHERE id = note_id AND user_id = (SELECT id FROM users WHERE in_email = email);
 END$$
+DELIMITER ;
 
 -- aggiornamento di una nota, data l'email dell'utente, il nuovo commento e l'id della nota
 DROP PROCEDURE IF EXISTS update_note_comment;
@@ -127,6 +130,7 @@ BEGIN
     WHERE in_note_id = note_id AND
           note_id IN (SELECT id FROM notes WHERE user_id = (SELECT id FROM users WHERE in_email = email));
 END$$
+DELIMITER ;
 
 -- eliminazione di una nota, data l'email dell'utente e l'id della nota
 DROP PROCEDURE IF EXISTS delete_note;
@@ -139,6 +143,7 @@ BEGIN
     DELETE FROM notes
     WHERE id = note_id AND user_id = (SELECT id FROM users WHERE in_email = email);
 END$$
+DELIMITER ;
 
 -- ricerca di un utente, data una query, controlla se esiste un utente con username o email che contengano la query
 DROP PROCEDURE IF EXISTS search_user;
@@ -153,6 +158,7 @@ BEGIN
     WHERE LOWER(username) LIKE LOWER(CONCAT('%', query, '%')) OR LOWER(email) LIKE LOWER(CONCAT('%', query, '%'))
     LIMIT offs, lim;
 END$$
+DELIMITER ;
 
 -- ricerca di una nota, data una query, controlla se esiste una nota con label che contengano la query, data anche l'email dell'utente
 DROP PROCEDURE IF EXISTS search_note;
@@ -171,6 +177,7 @@ BEGIN
       AND user_id = (SELECT id FROM users WHERE in_email = email)
     LIMIT offs, lim;
 END$$
+DELIMITER ;
 
 -- inserisce una nuova condivisione, data l'email dell'utente, l'id della nota e l'email dell'utente con cui condividere la nota
 DROP PROCEDURE IF EXISTS insert_shared;
@@ -189,6 +196,7 @@ BEGIN
     INSERT INTO shared (note_id, user_id)
     VALUES (note_id, (SELECT id FROM users WHERE in_email = shared_email));
 END$$
+DELIMITER ;
 
 -- prende tutte le note condivise con l'utente, data l'email dell'utente, e le note che lui ha condiviso
 DROP PROCEDURE IF EXISTS get_shared;
@@ -207,3 +215,4 @@ BEGIN
     RIGHT JOIN shared AS s on notes.id = s.note_id
     WHERE notes.user_id = (SELECT id FROM users WHERE in_email = email);
 END$$
+DELIMITER ;
