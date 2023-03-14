@@ -1,6 +1,6 @@
 <?php
 
-const search_users_query = "SELECT id, email, username FROM users WHERE LOWER(username) LIKE ? OR LOWER(email) LIKE ?;";
+const search_users_query = "SELECT id, email, username FROM users WHERE MATCH(email, username) AGAINST(?);";
 const insert_user_query = "INSERT INTO users (username, password, email) VALUES (?, ?, ?);";
 const get_notes_query =
     "SELECT label, text, notes.id as note_id, comments.note_id as comment_id, date FROM notes".
@@ -11,11 +11,12 @@ const get_notes_query =
 const get_user_id_query = "SELECT id FROM users WHERE email = ?;";
 const insert_note_query = "INSERT INTO notes (label, user_id) SELECT ?, id FROM users WHERE email = ?;";
 const insert_comment_query = "INSERT INTO comments (text, note_id) VALUES (?, LAST_INSERT_ID);";
-const search_notes_query = "SELECT label, text, notes.id as note_id, comments.note_id as comment_id, date FROM notes".
+const search_notes_query =
+    "SELECT label, text, notes.id as note_id, comments.note_id as comment_id, date FROM notes".
     " LEFT JOIN comments ON notes.id = comments.note_id".
     " LEFT JOIN users ON notes.user_id = users.id WHERE users.email = ?".
-    " AND (LOWER(label) LIKE ? OR LOWER(text) LIKE ?)".
-    " ORDER BY date DESC".
+    " AND MATCH(text, label) AGAINST(?)".
+    " ORDER BY MATCH(text, label) AGAINST(?) DESC, date DESC".
     " LIMIT ?, ?;";
 const check_note_owner_query = "SELECT * FROM notes WHERE id = ? AND user_id = (SELECT id from users WHERE email = ?);";
 const update_note_query = "UPDATE notes SET label = ? WHERE id = ?;";
@@ -74,8 +75,6 @@ function get_notes($email, $limit=100, $offset=0): ?array
 
 function get_notes_containing($email, $query, $limit=100, $offset=0): ?array
 {
-    $query = "%".$query."%";
-    $query = strtolower($query);
     return execute(search_notes_query, "sssii", $email, $query, $query, $offset, $limit)->fetch_all(MYSQLI_ASSOC);
 }
 
@@ -103,9 +102,7 @@ function set_email_verified($email): void
 
 function search_users($query): array
 {
-    $query = "%".$query."%";
-    $query = strtolower($query);
-    return execute(search_users_query, "ss", $query, $query)->fetch_all(MYSQLI_ASSOC);
+    return execute(search_users_query, "s", $query)->fetch_all(MYSQLI_ASSOC);
 }
 
 function share_note($owner, $note_id, $email): void

@@ -6,8 +6,13 @@
 -- ci possono anche essere dei commenti sulle note
 -- le note possono essere condivise con utenti specifici
 
--- creazione della tabella users
+-- droppo in ordine per i foreign key checks
+DROP TABLE IF EXISTS shared;
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS notes;
 DROP TABLE IF EXISTS users;
+
+-- creazione della tabella users
 CREATE TABLE users (
     id INT NOT NULL AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL,
@@ -17,21 +22,20 @@ CREATE TABLE users (
     is_admin BOOLEAN NOT NULL DEFAULT FALSE,
     is_email_verified BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (id)
-);
+) ENGINE=InnoDB;
 
 -- creazione della tabella notes
-DROP TABLE IF EXISTS notes;
 CREATE TABLE notes (
     id INT NOT NULL AUTO_INCREMENT,
     label VARCHAR(50) NOT NULL,
     user_id INT NOT NULL,
     date DATE NOT NULL DEFAULT (CURRENT_DATE),
     PRIMARY KEY (id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FULLTEXT (label)
+) ENGINE=InnoDB;
 
 -- creazione della tabella comments
-DROP TABLE IF EXISTS comments;
 CREATE TABLE comments (
     note_id INT NOT NULL,
     text VARCHAR(500) NOT NULL CHECK ( LENGTH(TRIM(text)) > 0 ),
@@ -39,11 +43,11 @@ CREATE TABLE comments (
     PRIMARY KEY (note_id),
     FOREIGN KEY (note_id)
         REFERENCES notes(id)
-        ON DELETE CASCADE
-);
+        ON DELETE CASCADE,
+    FULLTEXT (text)
+) ENGINE=InnoDB;
 
 -- creazione della tabella shared
-DROP TABLE IF EXISTS shared;
 CREATE TABLE shared (
     note_id INT NOT NULL,
     user_id INT NOT NULL,
@@ -52,7 +56,8 @@ CREATE TABLE shared (
         REFERENCES notes(id)
         ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id)
-);
+) ENGINE=InnoDB;
+
 
 -- triggers:
 
