@@ -1,5 +1,26 @@
 <?php
 
+const search_users_query = "SELECT id, email, username FROM users WHERE LOWER(username) LIKE ? OR LOWER(email) LIKE ?;";
+const insert_user_query = "INSERT INTO users (username, password, email) VALUES (?, ?, ?);";
+const get_notes_query =
+    "SELECT label, text, notes.id as note_id, comments.note_id as comment_id, date FROM notes".
+    " LEFT JOIN comments ON notes.id = comments.note_id".
+    " LEFT JOIN users ON notes.user_id = users.id WHERE users.email = ?".
+    " ORDER BY date DESC".
+    " LIMIT ?, ?;";
+const get_user_id_query = "SELECT id FROM users WHERE email = ?;";
+const insert_note_query = "INSERT INTO notes (label, user_id) SELECT ?, id FROM users WHERE email = ?;";
+const insert_comment_query = "INSERT INTO comments (text, note_id) VALUES (?, LAST_INSERT_ID);";
+const search_notes_query = "SELECT label, text, notes.id as note_id, comments.note_id as comment_id, date FROM notes".
+    " LEFT JOIN comments ON notes.id = comments.note_id".
+    " LEFT JOIN users ON notes.user_id = users.id WHERE users.email = ?".
+    " AND (LOWER(label) LIKE ? OR LOWER(text) LIKE ?)".
+    " ORDER BY date DESC".
+    " LIMIT ?, ?;";
+const check_note_owner_query = "SELECT * FROM notes WHERE id = ? AND user_id = (SELECT id from users WHERE email = ?);";
+const update_note_query = "UPDATE notes SET label = ? WHERE id = ? AND user_id = (SELECT id from users WHERE email = ?);";
+const update_comment_query = "UPDATE comments SET text = ? WHERE note_id = ?;";
+
 function connect(): void
 {
     $servername = "127.0.0.1";
@@ -13,118 +34,53 @@ function connect(): void
     }
 }
 
-function email_exists($email): bool
+function execute($query, $types, ...$params): mysqli_result
 {
     global $conn;
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param($types, ...$params);
     $stmt->execute();
-    $result = $stmt->get_result();
-    $stmt->close();
-    return $result->num_rows > 0;
+    return $stmt->get_result();
 }
 
-function username_exists($username): bool
+function email_exists($email): bool
 {
-    global $conn;
-    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $stmt->close();
-    return $result->num_rows > 0;
+    return execute(get_user_id_query, "s", $email)->num_rows > 0;
 }
 
 function get_user($email): ?array
 {
-    global $conn;
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email = ?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $stmt->close();
-    if ($result->num_rows > 0) {
-        return $result->fetch_assoc();
-    }else{
-        return null;
-    }
+    return execute(get_user_id_query, "s", $email)->fetch_assoc();
 }
 
 function add_user($username, $password, $email): void
 {
-    global $conn;
-    $stmt = $conn->prepare("INSERT INTO users (username, password, email) VALUES (?, ?, ?)");
-    $password = password_hash($password, PASSWORD_BCRYPT);
-    $stmt->bind_param("sss", $username, $password, $email);
-    $stmt->execute();
-    $stmt->close();
+    execute(insert_user_query, "sss", $username, $password, $email);
 }
 
 function add_note($email, $label, $comment=NULL): void
 {
-    global $conn;
-    $stmt = $conn->prepare("INSERT INTO notes (label, user_id) SELECT ?, id FROM users WHERE email = ?;");
-    $stmt->bind_param("ss", $label, $email);
-    if($comment == NULL){
-        $stmt->execute();
-        $stmt->close();
-    }else{
-        $stmt2 = $conn->prepare("INSERT INTO comments (note_id, text) VALUES (LAST_INSERT_ID(), ?);");
-        $stmt2->bind_param("s", $comment);
-        $stmt->execute();
-        $stmt2->execute();
-        $stmt->close();
-        $stmt2->close();
-    }
+    execute(insert_note_query, "ss", $label, $email);
+    execute(insert_comment_query, "s", $comment);
 }
 
 function get_notes($email, $limit=100, $offset=0): ?array
 {
-    global $conn;
-    $stmt = $conn->prepare("SELECT label, text, notes.id as note_id, comments.note_id as comment_id, date FROM notes".
-                            " LEFT JOIN comments ON notes.id = comments.note_id".
-                            " LEFT JOIN users ON notes.user_id = users.id WHERE users.email = ?".
-                            " ORDER BY date DESC".
-                            " LIMIT ?, ?;");
-    $stmt->bind_param("sii", $email, $offset, $limit);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $stmt->close();
-    if ($result->num_rows > 0) {
-        return $result->fetch_all(MYSQLI_ASSOC);
-    }else{
-        return null;
-    }
+    return execute(get_notes_query, "sii", $email, $offset, $limit)->fetch_all(MYSQLI_ASSOC);
 }
 
 function get_notes_containing($email, $query, $limit=100, $offset=0): ?array
 {
-    global $conn;
     $query = "%".$query."%";
     $query = strtolower($query);
-    $stmt = $conn->prepare("SELECT label, text, notes.id as note_id, comments.note_id as comment_id, date FROM notes".
-        " LEFT JOIN comments ON notes.id = comments.note_id".
-        " LEFT JOIN users ON notes.user_id = users.id WHERE users.email = ?".
-        " AND (LOWER(label) LIKE ? OR LOWER(text) LIKE ?)".
-        " ORDER BY date DESC".
-        " LIMIT ?, ?;");
-    $stmt->bind_param("sssii", $email, $query, $query, $offset, $limit);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $stmt->close();
-    if ($result->num_rows > 0) {
-        return $result->fetch_all(MYSQLI_ASSOC);
-    }else{
-        return null;
-    }
+    return execute(search_notes_query, "sssii", $email, $query, $query, $offset, $limit)->fetch_all(MYSQLI_ASSOC);
 }
 
 
 function edit_note($email, $note_id, $label, $comment=NULL): void
 {
     global $conn;
-    $stmt = $conn->prepare("UPDATE notes SET label = ? WHERE id = ? ".
-        "AND user_id = (SELECT id from users WHERE email = ?)");
+    $stmt = $conn->prepare();
     $stmt->bind_param("sis", $label, $note_id, $email);
     $stmt->execute();
     if(!empty($comment) && $stmt->affected_rows > 0){
@@ -158,14 +114,6 @@ function delete_note($email, $note_id): void
                             " AND user_id = (SELECT id from users WHERE email = ?)");
     $stmt->bind_param("is", $note_id, $email);
     $stmt->execute();
-    // delete comment
-    if($stmt->affected_rows > 0){
-        $stmt = $conn->prepare("DELETE FROM comments WHERE note_id = ?;");
-        $stmt->bind_param("i", $note_id);
-        $stmt->execute();
-        $stmt->close();
-    }
-
 }
 
 function delete_comment($comment_id): void
@@ -199,7 +147,8 @@ function set_email_verified($email): void
 function search_users($query){
     global $conn;
     $query = "%".$query."%";
-    $stmt = $conn->prepare("SELECT id, email, username FROM users WHERE username LIKE ? OR email LIKE ?;");
+    $query = strtolower($query);
+    $stmt = $conn->prepare(search_users_query);
     $stmt->bind_param("ss", $query, $query);
     $stmt->execute();
     $result = $stmt->get_result();

@@ -34,7 +34,7 @@ CREATE TABLE notes (
 DROP TABLE IF EXISTS comments;
 CREATE TABLE comments (
     note_id INT NOT NULL,
-    text VARCHAR(500) NOT NULL,
+    text VARCHAR(500) NOT NULL CHECK ( LENGTH(TRIM(text)) > 0 ),
     edit_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (note_id),
     FOREIGN KEY (note_id)
@@ -54,19 +54,35 @@ CREATE TABLE shared (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+-- triggers:
+
+-- trigger dopo l'update di un comment, se non esiste un commento per quella nota, lo crea
+DROP TRIGGER IF EXISTS update_comment;
+DELIMITER $$
+CREATE TRIGGER update_comment
+AFTER UPDATE ON comments
+FOR EACH ROW
+BEGIN
+    IF NEW.note_id NOT IN (SELECT note_id FROM comments) THEN
+        INSERT INTO comments (note_id, text)
+        VALUES (NEW.note_id, '');
+    END IF;
+END$$
+DELIMITER ;
+
 -- stored procedures:
 
 -- inserimento di un nuovo utente
 DROP PROCEDURE IF EXISTS insert_user;
 DELIMITER $$
 CREATE PROCEDURE insert_user(
-    IN username VARCHAR(50),
-    IN password BINARY(60),
-    IN email VARCHAR(50)
+    IN in_username VARCHAR(50),
+    IN in_password BINARY(60),
+    IN in_email VARCHAR(50)
 )
 BEGIN
     INSERT INTO users (username, password, email)
-    VALUES (username, password, email);
+    VALUES (in_username, in_password, in_email);
 END$$
 DELIMITER ;
 
@@ -93,7 +109,7 @@ CREATE PROCEDURE insert_note_with_comment(
 )
 BEGIN
     INSERT INTO notes (label, user_id)
-    VALUES (label, (SELECT id FROM users WHERE in_email = email));
+    VALUES (in_label, (SELECT id FROM users WHERE in_email = email));
     IF comment IS NOT NULL AND comment != '' THEN
         INSERT INTO comments (note_id, text)
         VALUES (LAST_INSERT_ID(), comment);
@@ -129,6 +145,10 @@ BEGIN
     SET text = comment
     WHERE in_note_id = note_id AND
           note_id IN (SELECT id FROM notes WHERE user_id = (SELECT id FROM users WHERE in_email = email));
+    IF ROW_COUNT() = 0 THEN
+        INSERT INTO comments (note_id, text)
+        VALUES (in_note_id, comment);
+    END IF;
 END$$
 DELIMITER ;
 
