@@ -70,6 +70,19 @@ BEGIN
 END$$
 DELIMITER ;
 
+-- trigger prima dell'update di un commento, se il commento è vuoto, lo elimina
+DROP TRIGGER IF EXISTS delete_comment;
+DELIMITER $$
+CREATE TRIGGER delete_comment
+BEFORE UPDATE ON comments
+FOR EACH ROW
+BEGIN
+    IF TRIM(NEW.text) = '' THEN
+        DELETE FROM comments
+        WHERE note_id = NEW.note_id;
+    END IF;
+END$$
+
 -- stored procedures:
 
 -- inserimento di un nuovo utente

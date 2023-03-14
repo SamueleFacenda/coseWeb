@@ -18,8 +18,11 @@ const search_notes_query = "SELECT label, text, notes.id as note_id, comments.no
     " ORDER BY date DESC".
     " LIMIT ?, ?;";
 const check_note_owner_query = "SELECT * FROM notes WHERE id = ? AND user_id = (SELECT id from users WHERE email = ?);";
-const update_note_query = "UPDATE notes SET label = ? WHERE id = ? AND user_id = (SELECT id from users WHERE email = ?);";
+const update_note_query = "UPDATE notes SET label = ? WHERE id = ?;";
 const update_comment_query = "UPDATE comments SET text = ? WHERE note_id = ?;";
+const delete_note_query = "DELETE FROM notes WHERE id = ?;";
+const set_email_verified_query = "UPDATE users SET is_email_verified = 1 WHERE email = ?;";
+const insert_shared_note_query = "INSERT INTO shared_notes (note_id, user_id) SELECT ?, id FROM users WHERE email = ?;";
 
 function connect(): void
 {
@@ -79,83 +82,35 @@ function get_notes_containing($email, $query, $limit=100, $offset=0): ?array
 
 function edit_note($email, $note_id, $label, $comment=NULL): void
 {
-    global $conn;
-    $stmt = $conn->prepare();
-    $stmt->bind_param("sis", $label, $note_id, $email);
-    $stmt->execute();
-    if(!empty($comment) && $stmt->affected_rows > 0){
-        // here the user is the certificated note owner
-
-        // check if note has a comment
-        $stmt = $conn->prepare("SELECT * FROM comments WHERE note_id = ?;");
-        $stmt->bind_param("i", $note_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $stmt->close();
-        if ($result->num_rows > 0) {
-            // update comment
-            $stmt = $conn->prepare("UPDATE comments SET text = ? WHERE note_id = ?;");
-        }else{
-            // add comment
-            $stmt = $conn->prepare("INSERT INTO comments (text, note_id) VALUES (?, ?);");
-        }
-        $stmt->bind_param("si", $comment, $note_id);
-        $stmt->execute();
-        $stmt->close();
+    if(execute(check_note_owner_query, "is", $note_id, $email)->num_rows > 0){
+        execute(update_note_query, "si", $label, $note_id);
+        execute(update_comment_query, "si", $comment, $note_id);
     }
-
 }
 
 function delete_note($email, $note_id): void
 {
-    global $conn;
-    // delete label
-    $stmt = $conn->prepare("DELETE FROM notes WHERE id = ?".
-                            " AND user_id = (SELECT id from users WHERE email = ?)");
-    $stmt->bind_param("is", $note_id, $email);
-    $stmt->execute();
-}
-
-function delete_comment($comment_id): void
-{
-    global $conn;
-    $stmt = $conn->prepare("DELETE FROM comments WHERE id = ?;");
-    $stmt->bind_param("i", $comment_id);
-    $stmt->execute();
-    $stmt->close();
-}
-
-function get_users(): array
-{
-    global $conn;
-    $stmt = $conn->prepare("SELECT * FROM users;");
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $stmt->close();
-    return $result->fetch_all(MYSQLI_ASSOC);
+    if(execute(check_note_owner_query, "is", $note_id, $email)->num_rows > 0){
+        // c'e' il delete cascade per il commento
+        execute(delete_note_query, "i", $note_id);
+    }
 }
 
 function set_email_verified($email): void
 {
-    global $conn;
-    $stmt = $conn->prepare("UPDATE users SET is_email_verified = 1 WHERE email = ?;");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $stmt->close();
+    execute(set_email_verified_query, "s", $email);
 }
 
-function search_users($query){
-    global $conn;
+function search_users($query): array
+{
     $query = "%".$query."%";
     $query = strtolower($query);
-    $stmt = $conn->prepare(search_users_query);
-    $stmt->bind_param("ss", $query, $query);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $stmt->close();
-    return $result->fetch_all(MYSQLI_ASSOC);
+    return execute(search_users_query, "ss", $query, $query)->fetch_all(MYSQLI_ASSOC);
 }
 
-function share($note, $email){
-
+function share_note($owner, $note_id, $email): void
+{
+    if(execute(check_note_owner_query,  "is", $note_id, $owner)->num_rows > 0){
+        execute(insert_shared_note_query, "is", $note_id, $email);
+    }
 }
