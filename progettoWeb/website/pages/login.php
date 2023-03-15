@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         connect();
 
         $user = get_user($email);
+        var_dump($user);
         if ($user == null) {
             // username not found
             $wrong_credentials = true;

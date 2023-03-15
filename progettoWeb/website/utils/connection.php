@@ -8,9 +8,10 @@ const get_notes_query =
     " LEFT JOIN users ON notes.user_id = users.id WHERE users.email = ?".
     " ORDER BY date DESC".
     " LIMIT ?, ?;";
-const get_user_id_query = "SELECT id FROM users WHERE email = ?;";
+const get_user_id_query = "SELECT * FROM users WHERE email = ?;";
 const insert_note_query = "INSERT INTO notes (label, user_id) SELECT ?, id FROM users WHERE email = ?;";
-const insert_comment_query = "INSERT INTO comments (text, note_id) VALUES (?, LAST_INSERT_ID);";
+const insert_comment_query = "INSERT INTO comments (text, note_id) SELECT ?, id FROM notes ORDER BY date DESC LIMIT 1;";
+const insert_comment_id_query = "INSERT INTO comments (text, note_id) VALUES (?, ?);";
 const search_notes_query =
     "SELECT label, text, notes.id as note_id, comments.note_id as comment_id, date FROM notes".
     " LEFT JOIN comments ON notes.id = comments.note_id".
@@ -24,6 +25,7 @@ const update_comment_query = "UPDATE comments SET text = ? WHERE note_id = ?;";
 const delete_note_query = "DELETE FROM notes WHERE id = ?;";
 const set_email_verified_query = "UPDATE users SET is_email_verified = 1 WHERE email = ?;";
 const insert_shared_note_query = "INSERT INTO shared_notes (note_id, user_id) SELECT ?, id FROM users WHERE email = ?;";
+const comment_exists_query = "SELECT * FROM comments WHERE note_id = ?;";
 
 function connect(): void
 {
@@ -32,7 +34,7 @@ function connect(): void
     $password = "";
     $dbname = "my_facenda5inc2022";
     global $conn;
-    mysqli_report(MYSQLI_REPORT_ALL);
+    //mysqli_report(MYSQLI_REPORT_ALL);
 
     $conn = new mysqli($servername, $username, $password, $dbname);
     if ($conn->connect_error) {
@@ -85,7 +87,14 @@ function edit_note($email, $note_id, $label, $comment=NULL): void
 {
     if(execute(check_note_owner_query, "is", $note_id, $email)->num_rows > 0){
         execute(update_note_query, "si", $label, $note_id);
-        execute(update_comment_query, "si", $comment, $note_id);
+        if(!empty($comment)){
+            if(execute(comment_exists_query, "i", $note_id)->num_rows > 0){
+                execute(update_comment_query, "si", $comment, $note_id);
+            }else{
+                execute(insert_comment_query, "si", $comment, $note_id);
+            }
+
+        }
     }
 }
 

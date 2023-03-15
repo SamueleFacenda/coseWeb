@@ -29,7 +29,7 @@ CREATE TABLE notes (
     id INT NOT NULL AUTO_INCREMENT,
     label VARCHAR(50) NOT NULL,
     user_id INT NOT NULL,
-    date DATE NOT NULL DEFAULT (CURRENT_DATE),
+    date DATETIME NOT NULL DEFAULT (NOW()),
     PRIMARY KEY (id),
     FOREIGN KEY (user_id) REFERENCES users(id),
     FULLTEXT (label)
@@ -57,36 +57,6 @@ CREATE TABLE shared (
         ON DELETE CASCADE,
     FOREIGN KEY (user_id) REFERENCES users(id)
 ) ENGINE=InnoDB;
-
-
--- triggers:
-
--- trigger dopo l'update di un comment, se non esiste un commento per quella nota, lo crea
-DROP TRIGGER IF EXISTS update_comment;
-DELIMITER $$
-CREATE TRIGGER update_comment
-AFTER UPDATE ON comments
-FOR EACH ROW
-BEGIN
-    IF NEW.note_id NOT IN (SELECT note_id FROM comments) THEN
-        INSERT INTO comments (note_id, text)
-        VALUES (NEW.note_id, '');
-    END IF;
-END$$
-DELIMITER ;
-
--- trigger prima dell'update di un commento, se il commento è vuoto, lo elimina
-DROP TRIGGER IF EXISTS delete_comment;
-DELIMITER $$
-CREATE TRIGGER delete_comment
-BEFORE UPDATE ON comments
-FOR EACH ROW
-BEGIN
-    IF TRIM(NEW.text) = '' THEN
-        DELETE FROM comments
-        WHERE note_id = NEW.note_id;
-    END IF;
-END$$
 
 -- stored procedures:
 
