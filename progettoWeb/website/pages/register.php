@@ -32,8 +32,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (email_exists($email)) {
             $email_already_exist = true;
         }else{
-            add_user($username, $password, $email);
+            $password = password_hash($password, PASSWORD_BCRYPT);
 
+            add_user($username, $password, $email);
             /* the email has to be verified before the user can login
             // create jwt
             $jwt = createJwt((object) ['username' => $username, 'email' => $email, 'admin' => 0], $secret);

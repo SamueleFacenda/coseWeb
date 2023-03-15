@@ -32,13 +32,15 @@ function connect(): void
     $password = "";
     $dbname = "my_facenda5inc2022";
     global $conn;
+    mysqli_report(MYSQLI_REPORT_ALL);
+
     $conn = new mysqli($servername, $username, $password, $dbname);
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
 }
 
-function execute($query, $types, ...$params): mysqli_result
+function execute($query, $types, ...$params): mysqli_result | bool
 {
     global $conn;
     $stmt = $conn->prepare($query);
