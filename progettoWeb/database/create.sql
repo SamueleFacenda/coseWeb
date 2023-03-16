@@ -21,7 +21,8 @@ CREATE TABLE users (
     edit_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     is_admin BOOLEAN NOT NULL DEFAULT FALSE,
     is_email_verified BOOLEAN NOT NULL DEFAULT FALSE,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    FULLTEXT (username, email)
 ) ENGINE=InnoDB;
 
 -- creazione della tabella notes

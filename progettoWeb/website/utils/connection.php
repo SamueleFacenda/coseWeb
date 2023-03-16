@@ -1,6 +1,6 @@
 <?php
 
-const search_users_query = "SELECT id, email, username FROM users WHERE MATCH(email, username) AGAINST(?);";
+const search_users_query = "SELECT id, email, username FROM users WHERE MATCH(email, username) AGAINST(? WITH QUERY EXPANSION);";
 const insert_user_query = "INSERT INTO users (username, password, email) VALUES (?, ?, ?);";
 const get_notes_query =
     "SELECT label, text, notes.id as note_id, comments.note_id as comment_id, date FROM notes".
@@ -26,6 +26,7 @@ const delete_note_query = "DELETE FROM notes WHERE id = ?;";
 const set_email_verified_query = "UPDATE users SET is_email_verified = 1 WHERE email = ?;";
 const insert_shared_note_query = "INSERT INTO shared_notes (note_id, user_id) SELECT ?, id FROM users WHERE email = ?;";
 const comment_exists_query = "SELECT * FROM comments WHERE note_id = ?;";
+const delete_comment_query = "DELETE FROM comments WHERE note_id = ?;";
 
 function connect(): void
 {
@@ -87,11 +88,13 @@ function edit_note($email, $note_id, $label, $comment=NULL): void
 {
     if(execute(check_note_owner_query, "is", $note_id, $email)->num_rows > 0){
         execute(update_note_query, "si", $label, $note_id);
-        if(!empty($comment)){
+        if(empty($comment)){
+            execute(delete_comment_query, "i", $note_id);
+        }else{
             if(execute(comment_exists_query, "i", $note_id)->num_rows > 0){
                 execute(update_comment_query, "si", $comment, $note_id);
             }else{
-                execute(insert_comment_query, "si", $comment, $note_id);
+                execute(insert_comment_id_query, "si", $comment, $note_id);
             }
 
         }
