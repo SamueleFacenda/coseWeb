@@ -197,7 +197,7 @@ include_once '../static/navbar.php';
                 <div class="modal-body">
                     <div class="position-relative">
                         <div class="input-group mb-3">
-                            <input id="search" name="query" class="form-control d-inline-block" type="search" placeholder="Search user" aria-label="Search" onkeyup="updateSearch()">
+                            <input id="search" name="dest" class="form-control d-inline-block" type="search" placeholder="Search user" aria-label="Search" onkeyup="updateSearch()">
                             <button class="btn btn-outline-success" type="submit">
                                 <!-- share icon -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">

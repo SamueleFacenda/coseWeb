@@ -1,12 +1,13 @@
 <?php
 include_once '../utils/jwt.php';
 include_once '../utils/username.php';
+include_once '../utils/connection.php';
 
-if(isset($email) && isset($_POST['note_id']) && isset($_POST['query'])){
-    $dest = $_POST['query'];
+if(isset($email) && isset($_POST['note_id']) && isset($_POST['dest'])){
+    $dest = $_POST['dest'];
     $note_id = $_POST['note_id'];
-
-
+    connect();
+    share_note($email, $note_id, $dest);
 }
 
 
