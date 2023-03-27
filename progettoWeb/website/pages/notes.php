@@ -4,6 +4,8 @@ include_once '../utils/jwt.php';
 include_once '../utils/username.php';
 include_once '../utils/connection.php';
 
+$shared = isset($shared) && $shared;
+
 if(isset($email)){
     connect();
 
@@ -19,17 +21,17 @@ if(isset($email)){
             switch($action){
                 case 'create':
                     add_note($email, $label, $text);
-                    $toast_text = 'Note with title'.htmlspecialchars($label).' added successfully!';
+                    $toast_text = 'Note with title '.htmlspecialchars($label).' added successfully!';
                     break;
                 case 'edit':
                     $id = $_POST['note_id'];
                     edit_note($email, $id, $label, $text);
-                    $toast_text = 'Note with title'.htmlspecialchars($label).' edited successfully!';
+                    $toast_text = 'Note with title '.htmlspecialchars($label).' edited successfully!';
                     break;
                 case 'delete':
                     $id = $_POST['note_id'];
                     delete_note($email, $id);
-                    $toast_text = 'Note with title'.htmlspecialchars($label).' deleted successfully!';
+                    $toast_text = 'Note with title '.htmlspecialchars($label).' deleted successfully!';
                     break;
             }
         }
@@ -41,9 +43,15 @@ if(isset($email)){
 
     if(isset($_GET['query'])){
         $query = $_GET['query'];
-        $notes = get_notes_containing($email, $query);
+        if($shared)
+            $notes = get_shared_notes_containing($email, $query);
+        else
+            $notes = get_notes_containing($email, $query);
     }else{
-        $notes = get_notes($email);
+        if($shared)
+            $notes = get_shared_notes($email);
+        else
+            $notes = get_notes($email);
     }
 }
 
@@ -59,7 +67,14 @@ include_once '../static/navbar.php';
 <section class="text-center">
     <div class="row align-items-center justify-content-center">
         <div class="col-sm-2 offset-sm-5">
-            <h1 class="display-4 w-auto">Notes</h1>
+            <h1 class="display-4 w-auto">
+                <?php
+                if($shared)
+                    echo 'Shared';
+                else
+                    echo 'Notes';
+                ?>
+            </h1>
         </div>
         <div class="col-sm-4 offset-sm-1 text-center">
             <div class="mx-sm-2 px-4 px-sm-0">
@@ -82,21 +97,26 @@ include_once '../static/navbar.php';
         <p>Log in to see your notes</p>
     <?php else:
         if($notes == null && empty($query)){
-            echo "<p>You don't have any notes, click on 'add note' to create one!</p>";
+            echo (isset($shared)) ?
+                "<p>You don't have any shared note!</p>" :
+                "<p>You don't have any note, click on 'add note' to create one!</p>";
         }
         if($notes == null && !empty($query)){
             echo "<p>No search result!</p>";
         }
+        if(!$shared):
         ?>
 
-        <!-- Button trigger modal -->
-        <button class="z-3 btn btn-primary position-fixed bottom-0 end-0 m-md-5 m-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
-                <!-- + icon -->
-                <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
-            </svg>
-            Add note
-        </button>
+            <!-- Button trigger modal -->
+            <button class="z-3 btn btn-primary position-fixed bottom-0 end-0 m-md-5 m-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16">
+                    <!-- + icon -->
+                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                </svg>
+                Add note
+            </button>
+
+        <?php endif; ?>
 
         <!-- Notes -->
         <div class="container mt-3">
