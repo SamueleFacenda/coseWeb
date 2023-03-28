@@ -9,11 +9,11 @@ global $csrf_token;
 $shared = isset($shared) && $shared;
 
 if(isset($email)){
-    check_token($_POST['csrf_token']);
-
     connect();
 
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
+        check_token($_POST['csrf_token']);
+
         $action = $_POST['action'];
 
         if(!empty($action)){

@@ -5,8 +5,7 @@ const SECRET = 'segretone';
 function generate_token(): string
 {
     global $email;
-    $checks = array(
-        'time'=>time(),
+    $checks = (object) array(
         'page'=>$_SERVER['PHP_SELF'],
         'email'=>$email
     );
@@ -15,7 +14,7 @@ function generate_token(): string
 }
 
 function check_fail(): void{
-    header('location: /pages/security.php');
+    //header('location: /pages/security.php');
     die();
 }
 
@@ -27,10 +26,11 @@ function check_token($token): void
 
     $data = getJwtDat($token);
 
-    if($data['email'] !== $email)
+    if($data->email !== $email)
         check_fail();
 
-    if($data['page'] !==$_SERVER['PHP_SELF'])
+
+    if($data->page !==$_SERVER['PHP_SELF'])
         check_fail();
 }
 
