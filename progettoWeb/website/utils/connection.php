@@ -20,7 +20,9 @@ const search_notes_query =
     " OR MATCH(text) AGAINST(?))".
     " ORDER BY (MATCH(text) AGAINST(?) + MATCH(label) AGAINST(?)) DESC, date DESC".
     " LIMIT ?, ?;";
-const check_note_owner_query = "SELECT * FROM notes WHERE id = ? AND user_id = (SELECT id from users WHERE email = ?);";
+const check_note_owner_query =
+    "SELECT 1 FROM notes WHERE id = ? AND user_id = (SELECT id from users WHERE email = ?) ".
+    "UNION SELECT 1 FROM shared WHERE note_id = ? AND user_id = (SELECT id from users WHERE email = ?);";
 const update_note_query = "UPDATE notes SET label = ? WHERE id = ?;";
 const update_comment_query = "UPDATE comments SET text = ? WHERE note_id = ?;";
 const delete_note_query = "DELETE FROM notes WHERE id = ?;";
@@ -37,6 +39,8 @@ const get_shared_notes_query =
     "ON shared.note_id = notes.id ".
     "WHERE shared.user_id = ".
     "(SELECT id FROM users WHERE email = ?) ".
+    "OR notes.user_id = ".
+    "(SELECT id FROM users WHERE email = ?) ".
     "ORDER BY date DESC ".
     "LIMIT ?, ?;";
 const search_shared_notes_query =
@@ -47,6 +51,8 @@ const search_shared_notes_query =
     "RIGHT JOIN shared ".
     "ON shared.note_id = notes.id ".
     "WHERE shared.user_id = ".
+    "(SELECT id FROM users WHERE email = ?) ".
+    "OR notes.user_id = ".
     "(SELECT id FROM users WHERE email = ?) ".
     "AND (MATCH(label) AGAINST(?) ".
     "OR MATCH(text) AGAINST(?)) ".
@@ -116,7 +122,7 @@ function get_notes_containing($email, $query, $limit=100, $offset=0): ?array
 
 function edit_note($email, $note_id, $label, $comment=NULL): void
 {
-    if(execute(check_note_owner_query, "is", $note_id, $email)->num_rows > 0){
+    if(execute(check_note_owner_query, "isis", $note_id, $email, $note_id, $email)->num_rows > 0){
         execute(update_note_query, "si", $label, $note_id);
         if(empty($comment)){
             execute(delete_comment_query, "i", $note_id);
@@ -134,7 +140,7 @@ function edit_note($email, $note_id, $label, $comment=NULL): void
 
 function delete_note($email, $note_id): void
 {
-    if(execute(check_note_owner_query, "is", $note_id, $email)->num_rows > 0){
+    if(execute(check_note_owner_query, "isis", $note_id, $email, $note_id, $email)->num_rows > 0){
         // c'e' il delete cascade per il commento
         execute(delete_note_query, "i", $note_id);
     }
@@ -152,17 +158,17 @@ function search_users($query): array
 
 function share_note($owner, $note_id, $email): void
 {
-    if(execute(check_note_owner_query,  "is", $note_id, $owner)->num_rows > 0){
+    if(execute(check_note_owner_query,  "isis", $note_id, $owner, $note_id, $owner)->num_rows > 0){
         execute(insert_shared_note_query, "is", $note_id, $email);
     }
 }
 
 function get_shared_notes_containing($email, $query, $limit=100, $offset=0): ?array
 {
-    return execute(search_shared_notes_query, "sssssii", $email, $query, $query, $query, $query, $offset, $limit)->fetch_all(MYSQLI_ASSOC);
+    return execute(search_shared_notes_query, "ssssssii", $email, $email, $query, $query, $query, $query, $offset, $limit)->fetch_all(MYSQLI_ASSOC);
 }
 
 function get_shared_notes($email, $limit=100, $offset=0): ?array
 {
-    return execute(get_shared_notes_query, "sii", $email, $offset, $limit)->fetch_all(MYSQLI_ASSOC);
+    return execute(get_shared_notes_query, "ssii", $email, $email, $offset, $limit)->fetch_all(MYSQLI_ASSOC);
 }

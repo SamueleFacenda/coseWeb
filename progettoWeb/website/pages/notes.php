@@ -10,28 +10,39 @@ if(isset($email)){
     connect();
 
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
-        $label = $_POST['label'];
-        $text = $_POST['text'];
         $action = $_POST['action'];
-        if(empty($text)){
-            $text = null;
-        }
 
-        if(!empty($label) && !empty($action)){
+        if(!empty($action)){
             switch($action){
                 case 'create':
+                    $label = $_POST['label'];
+                    $text = $_POST['text'];
+                    if(empty($text)){
+                        $text = null;
+                    }
                     add_note($email, $label, $text);
                     $toast_text = 'Note with title '.htmlspecialchars($label).' added successfully!';
                     break;
                 case 'edit':
                     $id = $_POST['note_id'];
+                    $label = $_POST['label'];
+                    $text = $_POST['text'];
+                    if(empty($text)){
+                        $text = null;
+                    }
                     edit_note($email, $id, $label, $text);
                     $toast_text = 'Note with title '.htmlspecialchars($label).' edited successfully!';
                     break;
                 case 'delete':
                     $id = $_POST['note_id'];
                     delete_note($email, $id);
-                    $toast_text = 'Note with title '.htmlspecialchars($label).' deleted successfully!';
+                    $toast_text = 'Note deleted successfully!';
+                    break;
+                case 'share':
+                    $id = $_POST['note_id'];
+                    $dest = $_POST['dest'];
+                    share_note($email, $id, $dest);
+                    $toast_text = 'Note shared successfully!';
                     break;
             }
         }
@@ -214,7 +225,7 @@ include_once '../static/navbar.php';
                     <div class="position-relative">
                         <div class="input-group mb-3">
                             <input id="search" name="dest" class="form-control d-inline-block" type="search" placeholder="Search user" aria-label="Search" onkeyup="updateSearch()">
-                            <button class="btn btn-outline-success" type="submit">
+                            <button class="btn btn-outline-success" type="submit" value="share" name="action">
                                 <!-- share icon -->
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-share" viewBox="0 0 16 16">
                                     <path d="M13.5 1a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM11 2.5a2.5 2.5 0 1 1 .603 1.628l-6.718 3.12a2.499 2.499 0 0 1 0 1.504l6.718 3.12a2.5 2.5 0 1 1-.488.876l-6.718-3.12a2.5 2.5 0 1 1 0-3.256l6.718-3.12A2.5 2.5 0 0 1 11 2.5zm-8.5 4a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm11 5.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/>
@@ -228,7 +239,7 @@ include_once '../static/navbar.php';
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="submit" name="action" class="btn btn-primary" value="share">Save</button>
                 </div>
                 <input type="hidden" name="note_id">
             </form>
