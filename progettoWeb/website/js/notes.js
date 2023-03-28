@@ -25,13 +25,13 @@ function updateTextArea(){
 
 function updateSearch(){
     // ajaj request
-    query = document.getElementById('search').value;
+    let query = document.getElementById('search').value;
     let list = document.getElementById('searchList');
     if (query.length < 1){
         list.innerHTML = '';
         return;
     }
-    url = '/api/search_users.php?query=' + query;
+    let url = '/api/search_users.php?query=' + query;
     fetch(url)
     .then(response => response.json())
     .then(data => {
