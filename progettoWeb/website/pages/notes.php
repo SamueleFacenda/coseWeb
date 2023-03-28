@@ -3,10 +3,14 @@
 include_once '../utils/jwt.php';
 include_once '../utils/username.php';
 include_once '../utils/connection.php';
+include_once '../utils/csrf.php';
+global $csrf_token;
 
 $shared = isset($shared) && $shared;
 
 if(isset($email)){
+    check_token($_POST['csrf_token']);
+
     connect();
 
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
@@ -92,7 +96,7 @@ include_once '../static/navbar.php';
                 <!-- research -->
                 <form class="d-flex" role="search" method="get" action="<?= ($shared)? "shared.php":"notes.php" ?>">
                     <input class="form-control me-2 w-75" type="search" placeholder="Search" aria-label="Search" name="query"
-                    value="<?=$query?>">
+                    value="<?= htmlspecialchars($query) ?>">
                     <button class="btn btn-outline-success w-25" type="submit">
                         <!-- search icon -->
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
@@ -179,6 +183,7 @@ include_once '../static/navbar.php';
                 <div class="modal-footer">
                     <button type="submit" name="action" value="create" class="btn btn-primary">Save</button>
                 </div>
+                <input name="csrf_token" value="<?= $csrf_token ?>" type="hidden">
             </form>
         </div>
     </div>
@@ -210,6 +215,7 @@ include_once '../static/navbar.php';
                     <button type="submit" name="action" class="btn btn-primary" value="edit">Save</button>
                 </div>
                 <input type="hidden" name="note_id">
+                <input name="csrf_token" value="<?= $csrf_token ?>" type="hidden">
             </form>
         </div>
     </div>
@@ -246,6 +252,7 @@ include_once '../static/navbar.php';
                     <button type="submit" name="action" class="btn btn-primary" value="share">Save</button>
                 </div>
                 <input type="hidden" name="note_id">
+                <input name="csrf_token" value="<?= $csrf_token ?>" type="hidden">
             </form>
         </div>
     </div>

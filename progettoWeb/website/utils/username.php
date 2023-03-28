@@ -18,4 +18,6 @@ if(isset($_COOKIE['jwt']) && verifyJwt($_COOKIE['jwt'], $secret, $maxAge)){
     $payload = getJwtDat($jwt);
     $username = $payload->username;
     $email = $payload->email;
+
+    include_once '/utils/csrf.php';
 }
