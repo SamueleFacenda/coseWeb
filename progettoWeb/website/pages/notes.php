@@ -39,10 +39,6 @@ if(isset($email)){
 
     if(isset($_GET['query'])){
         $query = $_GET['query'];
-    }
-
-    if(isset($_GET['query'])){
-        $query = $_GET['query'];
         if($shared)
             $notes = get_shared_notes_containing($email, $query);
         else
@@ -79,7 +75,7 @@ include_once '../static/navbar.php';
         <div class="col-sm-4 offset-sm-1 text-center">
             <div class="mx-sm-2 px-4 px-sm-0">
                 <!-- research -->
-                <form class="d-flex" role="search" method="get" action="notes.php">
+                <form class="d-flex" role="search" method="get" action="<?= ($shared)? "shared.php":"notes.php" ?>">
                     <input class="form-control me-2 w-75" type="search" placeholder="Search" aria-label="Search" name="query"
                     value="<?=$query?>">
                     <button class="btn btn-outline-success w-25" type="submit">
@@ -96,12 +92,12 @@ include_once '../static/navbar.php';
     <?php if(!isset($email)): ?>
         <p>Log in to see your notes</p>
     <?php else:
-        if($notes == null && empty($query)){
+        if($notes == null && !isset($query)){
             echo (isset($shared)) ?
                 "<p>You don't have any shared note!</p>" :
                 "<p>You don't have any note, click on 'add note' to create one!</p>";
         }
-        if($notes == null && !empty($query)){
+        if($notes == null && isset($query)){
             echo "<p>No search result!</p>";
         }
         if(!$shared):
@@ -154,7 +150,7 @@ include_once '../static/navbar.php';
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Add note</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="notes.php" method="post">
+            <form action="<?= ($shared)? "shared.php":"notes.php" ?>" method="post">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="label" class="form-label">Label</label>
@@ -181,7 +177,7 @@ include_once '../static/navbar.php';
                 <h1 class="modal-title fs-5" id="staticBackdropLabel">Edit note</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="notes.php" method="post">
+            <form action="<?= ($shared)? "shared.php":"notes.php" ?>" method="post">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label for="labelEdit" class="form-label">Label</label>

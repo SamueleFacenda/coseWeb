@@ -16,8 +16,9 @@ const search_notes_query =
     "SELECT label, text, notes.id as note_id, comments.note_id as comment_id, date FROM notes".
     " LEFT JOIN comments ON notes.id = comments.note_id".
     " LEFT JOIN users ON notes.user_id = users.id WHERE users.email = ?".
-    " AND MATCH(text, label) AGAINST(?)".
-    " ORDER BY MATCH(text, label) AGAINST(?) DESC, date DESC".
+    " AND (MATCH(label) AGAINST(?)".
+    " OR MATCH(text) AGAINST(?))".
+    " ORDER BY (MATCH(text) AGAINST(?) + MATCH(label) AGAINST(?)) DESC, date DESC".
     " LIMIT ?, ?;";
 const check_note_owner_query = "SELECT * FROM notes WHERE id = ? AND user_id = (SELECT id from users WHERE email = ?);";
 const update_note_query = "UPDATE notes SET label = ? WHERE id = ?;";
@@ -27,6 +28,30 @@ const set_email_verified_query = "UPDATE users SET is_email_verified = 1 WHERE e
 const insert_shared_note_query = "INSERT INTO shared (note_id, user_id) SELECT ?, id FROM users WHERE email = ?;";
 const comment_exists_query = "SELECT * FROM comments WHERE note_id = ?;";
 const delete_comment_query = "DELETE FROM comments WHERE note_id = ?;";
+const get_shared_notes_query =
+    "SELECT id AS note_id, label, text ".
+    "FROM notes ".
+    "LEFT JOIN comments ".
+    "ON comments.note_id = notes.id ".
+    "RIGHT JOIN shared ".
+    "ON shared.note_id = notes.id ".
+    "WHERE shared.user_id = ".
+    "(SELECT id FROM users WHERE email = ?) ".
+    "ORDER BY date DESC ".
+    "LIMIT ?, ?;";
+const search_shared_notes_query =
+    "SELECT id AS note_id, label, text, date ".
+    "FROM notes ".
+    "LEFT JOIN comments ".
+    "ON comments.note_id = notes.id ".
+    "RIGHT JOIN shared ".
+    "ON shared.note_id = notes.id ".
+    "WHERE shared.user_id = ".
+    "(SELECT id FROM users WHERE email = ?) ".
+    "AND (MATCH(label) AGAINST(?) ".
+    "OR MATCH(text) AGAINST(?)) ".
+    "ORDER BY (MATCH(text) AGAINST(?) + MATCH(label) AGAINST(?)) DESC, date DESC ".
+    "LIMIT ?, ?;";
 
 function connect(): void
 {
@@ -47,6 +72,11 @@ function execute($query, $types, ...$params): mysqli_result | bool
 {
     global $conn;
     $stmt = $conn->prepare($query);
+    /*
+    if($stmt === false){
+        die("Error: " . $conn->error);
+    }
+    */
     $stmt->bind_param($types, ...$params);
     $stmt->execute();
     return $stmt->get_result();
@@ -80,7 +110,7 @@ function get_notes($email, $limit=100, $offset=0): ?array
 
 function get_notes_containing($email, $query, $limit=100, $offset=0): ?array
 {
-    return execute(search_notes_query, "sssii", $email, $query, $query, $offset, $limit)->fetch_all(MYSQLI_ASSOC);
+    return execute(search_notes_query, "sssssii", $email, $query, $query, $query, $query, $offset, $limit)->fetch_all(MYSQLI_ASSOC);
 }
 
 
@@ -125,4 +155,14 @@ function share_note($owner, $note_id, $email): void
     if(execute(check_note_owner_query,  "is", $note_id, $owner)->num_rows > 0){
         execute(insert_shared_note_query, "is", $note_id, $email);
     }
+}
+
+function get_shared_notes_containing($email, $query, $limit=100, $offset=0): ?array
+{
+    return execute(search_shared_notes_query, "sssssii", $email, $query, $query, $query, $query, $offset, $limit)->fetch_all(MYSQLI_ASSOC);
+}
+
+function get_shared_notes($email, $limit=100, $offset=0): ?array
+{
+    return execute(get_shared_notes_query, "sii", $email, $offset, $limit)->fetch_all(MYSQLI_ASSOC);
 }
