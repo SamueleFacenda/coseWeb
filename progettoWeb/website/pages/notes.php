@@ -56,7 +56,7 @@ if(isset($email)){
         }
     }
 
-    if(isset($_GET['query'])){
+    if(isset($_GET['query']) && !empty($_GET['query'])){
         $query = $_GET['query'];
         if($shared)
             $notes = get_shared_notes_containing($email, $query);
