@@ -41,6 +41,10 @@ if(isset($email)){
                 case 'share':
                     $id = $_POST['note_id'];
                     $dest = $_POST['dest'];
+                    if($email === $dest){
+                        $toast_text = 'You cannot share a note with yourself!';
+                        break;
+                    }
                     share_note($email, $id, $dest);
                     $toast_text = 'Note shared successfully!';
                     break;
