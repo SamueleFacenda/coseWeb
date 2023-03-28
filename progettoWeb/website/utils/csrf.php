@@ -14,14 +14,15 @@ function generate_token(): string
 }
 
 function check_fail(): void{
-    //header('location: /pages/security.php');
+    header('location: /pages/security.php');
     die();
 }
 
 function check_token($token): void
 {
     global $email;
-    if(!verifyJwt($token, SECRET))
+    // token expire in 5d
+    if(!verifyJwt($token, SECRET, 60 * 60 * 24 * 5))
         check_fail();
 
     $data = getJwtDat($token);
