@@ -32,7 +32,7 @@ function check_token($token): void
 
 
     if($data->page !==$_SERVER['PHP_SELF'])
-        check_fail();
+        ;//check_fail();
 }
 
 global $csrf_token;

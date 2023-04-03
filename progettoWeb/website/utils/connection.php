@@ -41,6 +41,7 @@ const get_shared_notes_query =
     "(SELECT id FROM users WHERE email = ?) ".
     "OR notes.user_id = ".
     "(SELECT id FROM users WHERE email = ?) ".
+    "GROUP BY note_id ".
     "ORDER BY date DESC ".
     "LIMIT ?, ?;";
 const search_shared_notes_query =
@@ -56,6 +57,7 @@ const search_shared_notes_query =
     "(SELECT id FROM users WHERE email = ?) ".
     "AND (MATCH(label) AGAINST(?) ".
     "OR MATCH(text) AGAINST(?)) ".
+    "GROUP BY note_id ".
     "ORDER BY (MATCH(text) AGAINST(?) + MATCH(label) AGAINST(?)) DESC, date DESC ".
     "LIMIT ?, ?;";
 
