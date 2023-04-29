@@ -19,5 +19,13 @@ if(isset($_COOKIE['jwt']) && verifyJwt($_COOKIE['jwt'], $secret, $maxAge)){
     $username = $payload->username;
     $email = $payload->email;
 
+    $creationTime = $payload->creation_time;
+    if(time() - $creationTime > 3600*24){
+        // refresh jwt
+        $jwt = createJwt((object) ['username' => $username, 'email' => $email, 'admin' => $payload->admin], $secret);
+        // set jwt cookie for one month
+        setcookie('jwt', $jwt, time() + 3600 * 24 * 30 , '/', httponly: true);
+    }
+
     include_once '/utils/csrf.php';
 }
