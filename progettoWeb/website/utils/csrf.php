@@ -4,13 +4,7 @@ const SECRET = 'segretone';
 
 function generate_token(): string
 {
-    global $email;
-    $checks = (object) array(
-        'page'=>$_SERVER['PHP_SELF'],
-        'email'=>$email
-    );
-
-    return createJwt($checks, SECRET);
+    return bin2hex(openssl_random_pseudo_bytes(16));
 }
 
 function check_fail(): void{
@@ -18,22 +12,38 @@ function check_fail(): void{
     die();
 }
 
-function check_token($token): void
+function check_csrf(): void
 {
-    global $email;
-    // token expire in 5d
-    if(!verifyJwt($token, SECRET, 60 * 60 * 24 * 5))
+    // Double submit cookie
+    // must be called on post requests
+    if (!isset($_COOKIE['csrf_token']))
         check_fail();
 
-    $data = getJwtDat($token);
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        if (!isset($_POST['csrf_token']))
+            check_fail();
 
-    if($data->email !== $email)
-        check_fail();
+        if ($_POST['csrf_token'] !== $_COOKIE['csrf_token'])
+            check_fail();
+    }
 
+    /*
+    if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+        if (!isset($_GET['csrf_token']))
+            check_fail();
 
-    if($data->page !==$_SERVER['PHP_SELF'])
-        ;//check_fail();
+        if ($_GET['csrf_token'] !== $_COOKIE['csrf_token'])
+            check_fail();
+    }
+    */
+}
+
+function get_csrf_token_field(): string
+{
+    global $csrf_token;
+    return '<input name="csrf_token" value="' . $csrf_token . '" type="hidden">';
 }
 
 global $csrf_token;
 $csrf_token = generate_token();
+setcookie('csrf_token', $csrf_token, 0, '/', '', false, true);

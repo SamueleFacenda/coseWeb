@@ -12,7 +12,7 @@ if(isset($email)){
     connect();
 
     if($_SERVER['REQUEST_METHOD'] === 'POST'){
-        check_token($_POST['csrf_token']);
+        check_csrf();
 
         $action = $_POST['action'];
 
@@ -56,7 +56,7 @@ if(isset($email)){
         }
     }
 
-    if(isset($_GET['query']) && !empty($_GET['query'])){
+    if(!empty($_GET['query'])){
         $query = $_GET['query'];
         $notes = $shared ? get_shared_notes_containing($email, $query) : get_notes_containing($email, $query);
     }else{
@@ -177,7 +177,7 @@ include_once '../static/navbar.php';
                 <div class="modal-footer">
                     <button type="submit" name="action" value="create" class="btn btn-primary">Save</button>
                 </div>
-                <input name="csrf_token" value="<?= $csrf_token ?>" type="hidden">
+                <?= get_csrf_token_field() ?>
             </form>
         </div>
     </div>
@@ -209,7 +209,7 @@ include_once '../static/navbar.php';
                     <button type="submit" name="action" class="btn btn-primary" value="edit">Save</button>
                 </div>
                 <input type="hidden" name="note_id">
-                <input name="csrf_token" value="<?= $csrf_token ?>" type="hidden">
+                <?= get_csrf_token_field() ?>
             </form>
         </div>
     </div>
