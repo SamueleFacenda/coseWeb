@@ -1,0 +1,7 @@
+/Facenda/Facenda/js/react** linguist-vendored
+/Facenda/formReact/babel.js linguist-vendored
+/Facenda/formReact/react-dom.development.js linguist-vendored
+/Facenda/formReact/react.development.js linguist-vendored
+*.vsix linguist-vendored
+/Facenda/sitoTpsit/canvasjs.min.js linguist-vendored
+/react/SitoReactTosi/react.js linguist-vendored
