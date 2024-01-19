@@ -1,7 +1,8 @@
-/Facenda/Facenda/js/react** linguist-vendored
-/Facenda/formReact/babel.js linguist-vendored
-/Facenda/formReact/react-dom.development.js linguist-vendored
-/Facenda/formReact/react.development.js linguist-vendored
+Facenda/Facenda/js/react/* linguist-vendored
+babel.js linguist-vendored
+react-dom.development.js linguist-vendored
+react.development.js linguist-vendored
 *.vsix linguist-vendored
-/Facenda/sitoTpsit/canvasjs.min.js linguist-vendored
+canvasjs.min.js linguist-vendored
 /react/SitoReactTosi/react.js linguist-vendored
+/progettoWeb/website/static/head.php linguist-language=php
