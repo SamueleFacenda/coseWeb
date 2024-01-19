@@ -10,4 +10,4 @@ Dovrebbe essere sicuro.
 
 Una paginetta php che carica l'orario aggiornato del corso di infermieristica a trento.
 Viene aggiornato in automatico da un cron job online che manda una richiesta alla pagina 
-di update.
+di update. E' online [qui](https://pastapizza.altervista.org/univr/renderer.php)
