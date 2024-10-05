@@ -3,7 +3,7 @@
 libxml_use_internal_errors(true);
 
 $url = 'https://www.corsi.univr.it/?ent=cs&id=474&menu=studiare&tab=orario-lezioni&lang=it';
-$match = 'Orario 1° anno';
+$match = 'CALENDARIO 2°';
 $xquery = "//a[contains(.,'$match')]";
 
 // Create DOMdocument from URL
@@ -16,6 +16,28 @@ $href = $xpath->query($xquery);
 // get the href attribute
 $href = $href->item(0)->getAttribute('href');
 $href = "https://www.corsi.univr.it$href";
+
+
+# previous one
+// read the href from the file
+$fp = fopen('href.txt', 'r');
+$last_time = fgets($fp);
+$prev_href = fgets($fp);
+fclose($fp);
+if(strcmp($prev_href, $href) !== 0) {
+  # send notification mail
+  $email = 'placeholder@gmail.com';
+  $subject = 'Nuovo orario infermieristica';
+  $message = '<html><body>';
+  $message .= '<head><title>Orario infermieristica univr aggiornato!</title></head>';
+  $message .= '<h1>È uscito il nuovo orario</h1>';
+  $message .= '<p>Guardalo <a href="https://pastapizza.altervista.org/univr/renderer.php">qui</a></p>';
+  $message .= '</body></html>';
+  $headers = "MIME-Version: 1.0" . "\r\n";
+  $headers .= "Content-type:text/html; charset=UTF-8" . "\r\n";
+  $headers .= 'From: "Samuele Facenda" <pastapizza@altervista.org>' . "\r\n";
+  $res = mail($email, $subject,$message, $headers); 
+}
 
 // save value to file
 $fp = fopen('href.txt', 'w');

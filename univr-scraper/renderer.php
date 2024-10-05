@@ -27,7 +27,7 @@ $url = urlencode($url);
         <!-- fallback 1, pdfjs view -->
         <iframe title="PDF" src="pdfjs/web/viewer.html?file=<?= $url ?>" width="100%" height="100%">
             
-            <!-- fallback 2, drive pdf viewer, very buggi -->
+            <!-- fallback 2, drive pdf viewer, very buggy -->
             <iframe src="https://drive.google.com/viewerng/viewer?embedded=true&url=<?= $href ?>" 
                 id="iframepdf" onload="iframeLoaded()" onerror="updateIframe()"
                 width="100%" height="100%" frameborder="0">
