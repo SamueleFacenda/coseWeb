@@ -51,6 +51,9 @@ $anni = $conn->query("SELECT DISTINCT `year` FROM orari");
                 <option value="<?= $anno['year'] ?>"><?= $anno['year'] ?></option>
             <?php endwhile; ?>
         </select>
+        <label for="subscribe">Ricevi aggiornamenti via mail quando l'orario si aggiorna</label>
+        <input type="checkbox" name="subscribe" value="true">
+        <input type="email" name="email" placeholder="la tua mail (solo se vuoi ricevere notifiche)">
         <input type="submit" value="Invia">
     </form>
 </body>

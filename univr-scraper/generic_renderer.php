@@ -5,14 +5,31 @@ $anno = intval($anno);
 $laurea = $_GET['laurea'];
 $sede = $_GET['sede'];
 
+$subscribe = $_GET['subscribe'];
+$email = $_GET['email'];
+
 
 # query the database for the orario
 include_once 'db.php';
-$stmt = $conn->prepare("SELECT * FROM orari INNER JOIN corsi ON orari.corso = corsi.id WHERE `year` = ? AND laurea = ? AND sede = ?");
+$stmt = $conn->prepare("SELECT * FROM corsi INNER JOIN orari ON orari.corso = corsi.id WHERE `year` = ? AND laurea = ? AND sede = ?");
 $stmt->bind_param("iss", $anno, $laurea, $sede);
 $stmt->execute();
 $result = $stmt->get_result();
 $orario = $result->fetch_assoc();
+
+
+if($subscribe == "true") {
+    $orario_id = $orario['id'];
+    $stmt = $conn->prepare("INSERT IGNORE INTO subscriptions (email, orario) VALUES (?, ?)");
+    $stmt->bind_param("si", $email, $orario_id);
+    $stmt->execute();
+
+    $stmt->close();
+    $conn->close();
+    $escaped_laurea = urlencode($laurea);
+    header("Location: generic_renderer.php?laurea=$escaped_laurea&anno=$anno&sede=$sede");
+}
+
 $stmt->close();
 $conn->close();
 
