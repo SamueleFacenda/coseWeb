@@ -8,6 +8,6 @@ Dovrebbe essere sicuro.
 
 ## univr-scraper (timetable)
 
-Una paginetta php che carica l'orario aggiornato del corso di infermieristica a trento.
+Una paginetta php che carica l'orario aggiornato dei corsi di professioni sanitare univr.
 Viene aggiornato in automatico da un cron job online che manda una richiesta alla pagina 
-di update. E' online [qui](https://pastapizza.altervista.org/univr/renderer.php)
+di update. E' online [qui](https://pastapizza.altervista.org/univr/menu.php)
