@@ -9,6 +9,7 @@ if (!preg_match($regex, $url)) {
 
 header("Content-Type: application/pdf");
 header("Content-Disposition: inline; filename=\"orario.pdf\"");
+header("Cache-Control: public, max-age=31536000, immutable");
 
 // could be optimized maybe
 echo file_get_contents($url);

@@ -1,7 +1,19 @@
 <?php
 
+set_time_limit(1800);
+
 //suppress warnings for DOMDocument
 libxml_use_internal_errors(true);
+
+function active_wait($seconds) {
+    $end_time = time() + $seconds;
+    while (time() < $end_time) {
+        sha1(random_bytes(16));
+        echo " "; 
+        flush();
+        usleep(100000);// 0.1 seconds
+    }
+}
 
 $url = 'https://www.corsi.univr.it/?ent=cs&id=474&menu=studiare&tab=orario-lezioni&lang=it';
 
@@ -17,6 +29,9 @@ $urls = $urls->fetch_all(MYSQLI_ASSOC);
 $update_stmt = $conn->prepare("UPDATE orari SET lasturl = ? WHERE id = ?");
 
 foreach ($urls as $url) {
+    
+    // Delay between requets (reduce server spickes)
+    active_wait(random_int(10, 30));
 
     $id = parse_url($url['url'])['query'];
     $id = explode('=', $id)[2];
