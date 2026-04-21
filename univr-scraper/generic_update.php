@@ -1,5 +1,5 @@
 <?php
-
+ini_set('user_agent', 'Mozilla/5.0 (compatible; PHP DOMDocument)');
 set_time_limit(1800);
 
 //suppress warnings for DOMDocument
@@ -15,11 +15,41 @@ function active_wait($seconds) {
     }
 }
 
+function get_orario_links($orario_url, $xquery, &$page_cache) {
+    if (isset($page_cache[$orario_url])) {
+        return $page_cache[$orario_url];
+    }
+
+    // Delay only when doing an actual remote fetch.
+    active_wait(random_int(10, 30));
+
+    $html = new DOMDocument();
+    if (!$html->loadHTMLFile($orario_url)) {
+        $page_cache[$orario_url] = [];
+        return $page_cache[$orario_url];
+    }
+
+    $xpath = new DOMXPath($html);
+    $nodes = $xpath->query($xquery);
+
+    $links = [];
+    foreach ($nodes as $node) {
+        $links[] = [
+            'text' => $node->nodeValue,
+            'href' => $node->getAttribute('href')
+        ];
+    }
+
+    $page_cache[$orario_url] = $links;
+    return $links;
+}
+
 $url = 'https://www.corsi.univr.it/?ent=cs&id=474&menu=studiare&tab=orario-lezioni&lang=it';
 
 // https://www.corsi.univr.it/?ent=cs&id=1179&menu=studiare&tab=orario-lezioni&lang=en
 
-$xquery = "//div[@id='tab-orario-lezioni']//a[contains(.,'SEM') or contains(.,'sem')]";
+$xquery = "//a[contains(.,'SEM') or contains(.,'sem')]";
+# $xquery = "//div[@id='tab-orario-lezioni']//a[contains(.,'SEM') or contains(.,'sem')]";
 
 include_once 'db.php';
 
@@ -27,32 +57,24 @@ $urls = $conn->query("SELECT * FROM corsi LEFT JOIN orari ON corsi.id = orari.co
 $urls = $urls->fetch_all(MYSQLI_ASSOC);
 
 $update_stmt = $conn->prepare("UPDATE orari SET lasturl = ? WHERE id = ?");
+$page_cache = [];
 
 foreach ($urls as $url) {
-    
-    // Delay between requets (reduce server spickes)
-    active_wait(random_int(10, 30));
 
     $id = parse_url($url['url'])['query'];
     $id = explode('=', $id)[2];
     $orario_url = "https://www.corsi.univr.it/?ent=cs&id=$id&menu=studiare&tab=orario-lezioni&lang=it";
 
-    
-    // Create DOMdocument from URL
-    $html = new DOMDocument();
-    $html->loadHTMLFile($orario_url);
+    $links = get_orario_links($orario_url, $xquery, $page_cache);
 
-    // find the a tag with the xpath
-    $xpath = new DOMXPath($html);
-    $href = $xpath->query($xquery);
     // get the one that has the first number equals to the year
     $minPos = 1000;
     $node = null;
-    foreach ($href as $h) {
-        $pos = strpos($h->nodeValue, $url['year']);
+    foreach ($links as $link) {
+        $pos = strpos($link['text'], $url['year']);
         if ($pos !== false && $pos < $minPos) {
             $minPos = $pos;
-            $node = $h;
+            $node = $link;
         }
     }
 
@@ -61,7 +83,7 @@ foreach ($urls as $url) {
         continue;
     }
 
-    $href = $node->getAttribute('href');
+    $href = $node['href'];
 
 
     $href = "https://www.corsi.univr.it$href";
